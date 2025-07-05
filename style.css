@@ -1,106 +1,67 @@
-@import url('https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap');
-
 body {
+  background-color: #f5deb3;
+  background-image: 
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 100% 30px;
+  font-family: 'Kosugi Maru', 'Hannotate SC', 'Arial', sans-serif;
+  color: #4e3b2c;
+  padding: 30px 10px;
   margin: 0;
-  padding: 0;
-  background-color: #f5deb3; /* わら色 */
-  font-family: 'Kosugi Maru', sans-serif;
-  line-height: 1.6;
-  color: #3e3e3e;
 }
 
 .container {
-  max-width: 600px;
-  margin: auto;
+  max-width: 720px;
+  margin: 0 auto;
   padding: 20px;
-  background: #fffaf0;
-  border: 1px solid #d8cfc4;
-  border-radius: 10px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 }
 
-h1, h2 {
+h1 {
   text-align: center;
-  color: #5a4b3c;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: bold;
 }
 
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 30px;
-}
-
-input[type="text"],
-textarea {
+input, textarea {
+  width: 100%;
   padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background: #fffef9;
-  font-family: 'Kosugi Maru', sans-serif;
-}
-
-textarea {
-  height: 100px;
+  margin-bottom: 12px;
+  border: 1px dashed #aaa;
+  border-radius: 4px;
+  font-family: 'Kosugi Maru', 'Hannotate SC', sans-serif;
+  background-color: rgba(255, 255, 255, 0.85);
   resize: vertical;
 }
 
 button {
+  width: 100%;
   padding: 10px;
-  background-color: #e0c38b;
-  border: none;
+  background-color: #e1c48f;
+  color: #4e3b2c;
+  font-weight: bold;
+  border: 1px solid #caa974;
   border-radius: 5px;
-  font-size: 16px;
-  color: #3e3e3e;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
 button:hover {
-  background-color: #d3b675;
-}
-
-#entries {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+  background-color: #d8b77a;
 }
 
 .entry {
-  background: #fffff8;
-  border: 1px solid #e3dbc9;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
-}
-
-.entry-title {
-  font-weight: bold;
-  margin-bottom: 5px;
-  font-size: 18px;
-}
-
-.entry-nickname {
-  font-size: 14px;
-  color: #7c6f5f;
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 12px;
   margin-bottom: 10px;
+  border-left: 4px solid #caa974;
+  border-radius: 4px;
+  line-height: 1.5;
 }
 
-.entry-message {
-  font-size: 16px;
-  white-space: pre-wrap;
-}
-
-/* スマホ用レスポンシブ対応 */
-@media (max-width: 480px) {
-  body {
-    font-size: 14px;
-  }
-
-  input[type="text"],
-  textarea,
-  button {
-    font-size: 14px;
-  }
+h2 {
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 10px;
 }
