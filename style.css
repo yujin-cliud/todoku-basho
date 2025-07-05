@@ -1,69 +1,71 @@
 body {
-  background-color: #f5deb3;
-  background-image: 
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
-  background-size: 100% 30px;
-  font-family: 'Kosugi Maru', 'Hannotate SC', 'Arial', sans-serif;
-  color: #4e3b2c;
-  padding: 30px 10px;
+  background-color: #f5deb3; /* わら色 */
+  font-family: 'Zen Maru Gothic', sans-serif;
   margin: 0;
+  padding: 0;
 }
 
-.container {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.form-container,
+.post {
+  background: #fff8dc;
+  border: 1px solid #aaa;
+  padding: 16px;
+  margin: 16px auto;
+  width: 90%;
+  max-width: 600px;
+  font-family: 'Zen Maru Gothic', sans-serif;
   border-radius: 8px;
+  box-shadow: 2px 2px 6px #ccc;
 }
 
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 24px;
-  font-weight: bold;
-}
-
-input, textarea {
+textarea {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 12px;
-  border: 1px dashed #aaa;
-  border-radius: 4px;
-  font-family: 'Kosugi Maru', 'Hannotate SC', sans-serif;
-  background-color: rgba(255, 255, 255, 0.85);
-  resize: vertical;
-}
-
-button {
-  display: block;          /* ボタンをブロック要素に */
-  margin: 0 auto;          /* 左右のマージンを自動にして中央揃え */
-  padding: 10px 20px;
-  background-color: #e1c18b;
-  border: none;
-  border-radius: 5px;
-  font-family: "Kosugi Maru", sans-serif;
+  height: 120px;
+  padding: 8px;
   font-size: 16px;
-  cursor: pointer;
-  box-shadow: 2px 2px 3px rgba(0,0,0,0.1);
-}
-
-button:hover {
-  background-color: #d8b77a;
-}
-
-.entry {
-  background-color: rgba(255, 255, 255, 0.85);
-  padding: 12px;
-  margin-bottom: 10px;
-  border-left: 4px solid #caa974;
-  border-radius: 4px;
+  background: #fdf6e3;
+  border: 1px solid #ccc;
+  resize: vertical;
   line-height: 1.5;
 }
 
-h2 {
-  text-align: center;
-  margin-top: 30px;
-  margin-bottom: 10px;
+input[type="text"],
+textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;  /* ← これ重要 */
+  padding: 8px;
+  font-size: 16px;
+  margin-bottom: 8px;
+  background: #fdf6e3;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+
+button {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: #deb887;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #d2b48c;
+}
+
+.post h3 {
+  margin-top: 0;
+}
+
+.post p {
+  white-space: pre-wrap;
 }
