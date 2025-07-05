@@ -1,49 +1,52 @@
-document.getElementById("diary-form").addEventListener("submit", function (e) {
-  e.preventDefault();
-
-  const nickname = document.getElementById("nickname").value || "匿名さん";
-  const title = document.getElementById("title").value || "(無題)";
+// 投稿ボタン押したときの処理
+document.getElementById("submit").addEventListener("click", () => {
+  const username = document.getElementById("username").value.trim();
+  const title = document.getElementById("title").value.trim();
   const content = document.getElementById("content").value.trim();
 
-  if (!content) return;
+  if (!title || !content) {
+    alert("タイトルと本文を入力してね！");
+    return;
+  }
 
-  const date = new Date();
-  const dateString = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, "0")}`;
-
-  const diary = {
-    nickname,
+  const newPost = {
+    username: username || "匿名さん", // ←空白なら"匿名さん"
     title,
     content,
-    date: dateString
+    date: new Date().toLocaleString(),
   };
 
-  saveDiary(diary);
-  displayDiaries();
-  this.reset();
+  // 保存処理
+  let posts = JSON.parse(localStorage.getItem("posts") || "[]");
+  posts.unshift(newPost);
+  localStorage.setItem("posts", JSON.stringify(posts));
+
+  // 表示更新
+  displayPosts();
+
+  // フォームをリセット
+  document.getElementById("username").value = "";
+  document.getElementById("title").value = "";
+  document.getElementById("content").value = "";
 });
 
-function saveDiary(entry) {
-  const diaries = JSON.parse(localStorage.getItem("diaries") || "[]");
-  diaries.unshift(entry);
-  localStorage.setItem("diaries", JSON.stringify(diaries));
-}
+// 投稿一覧の表示処理
+function displayPosts() {
+  const posts = JSON.parse(localStorage.getItem("posts") || "[]");
+  const postsContainer = document.getElementById("posts");
+  postsContainer.innerHTML = "";
 
-function displayDiaries() {
-  const diaryList = document.getElementById("diary-list");
-  const diaries = JSON.parse(localStorage.getItem("diaries") || "[]");
-
-  diaryList.innerHTML = "";
-  diaries.forEach(entry => {
+  posts.forEach((post) => {
     const div = document.createElement("div");
-    div.className = "diary";
+    div.className = "post";
     div.innerHTML = `
-      <div><strong>${entry.date}</strong></div>
-      <div><em>${entry.nickname}</em></div>
-      <div><strong>${entry.title}</strong></div>
-      <div>${entry.content}</div>
+      <h3>${post.title}</h3>
+      <p>${post.content.replace(/\n/g, "<br>")}</p>
+      <small>${post.date}</small>
     `;
-    diaryList.appendChild(div);
+    postsContainer.appendChild(div);
   });
 }
 
-window.onload = displayDiaries;
+// 最初の表示
+window.addEventListener("load", displayPosts);
