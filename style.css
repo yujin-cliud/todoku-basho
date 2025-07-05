@@ -1,56 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap');
+
 body {
-  font-family: 'Zen Maru Gothic', sans-serif;
-  background-color: #f5deb3;
   margin: 0;
   padding: 0;
+  background-color: #f5deb3; /* わら色 */
+  font-family: 'Kosugi Maru', sans-serif;
+  line-height: 1.6;
+  color: #3e3e3e;
 }
 
-.app {
+.container {
   max-width: 600px;
-  margin: 30px auto;
+  margin: auto;
   padding: 20px;
   background: #fffaf0;
+  border: 1px solid #d8cfc4;
   border-radius: 10px;
-  box-shadow: 0 0 10px #d2b48c;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 }
 
 h1, h2 {
   text-align: center;
+  color: #5a4b3c;
 }
 
 form {
-  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 30px;
 }
 
-input, textarea {
-  width: 100%;
+input[type="text"],
+textarea {
   padding: 10px;
-  margin: 8px 0;
-  border: 1px dashed #c69c6d;
+  font-size: 16px;
+  border: 1px solid #ccc;
   border-radius: 5px;
-  box-sizing: border-box;
-  background: #fffdf5;
+  background: #fffef9;
+  font-family: 'Kosugi Maru', sans-serif;
+}
+
+textarea {
+  height: 100px;
+  resize: vertical;
 }
 
 button {
-  display: block;
-  margin: 0 auto;
-  padding: 8px 16px;
-  background-color: #deb887;
-  color: white;
+  padding: 10px;
+  background-color: #e0c38b;
   border: none;
   border-radius: 5px;
+  font-size: 16px;
+  color: #3e3e3e;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-#diary-list {
-  margin-top: 20px;
+button:hover {
+  background-color: #d3b675;
 }
 
-.diary {
-  background: #fffaf0;
-  border: 1px solid #deb887;
-  padding: 10px;
+#entries {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.entry {
+  background: #fffff8;
+  border: 1px solid #e3dbc9;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
+}
+
+.entry-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+  font-size: 18px;
+}
+
+.entry-nickname {
+  font-size: 14px;
+  color: #7c6f5f;
   margin-bottom: 10px;
-  border-radius: 5px;
+}
+
+.entry-message {
+  font-size: 16px;
+  white-space: pre-wrap;
+}
+
+/* スマホ用レスポンシブ対応 */
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+
+  input[type="text"],
+  textarea,
+  button {
+    font-size: 14px;
+  }
 }
