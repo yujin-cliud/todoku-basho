@@ -37,14 +37,16 @@ input, textarea {
 }
 
 button {
-  width: 100%;
-  padding: 10px;
-  background-color: #e1c48f;
-  color: #4e3b2c;
-  font-weight: bold;
-  border: 1px solid #caa974;
+  display: block;          /* ボタンをブロック要素に */
+  margin: 0 auto;          /* 左右のマージンを自動にして中央揃え */
+  padding: 10px 20px;
+  background-color: #e1c18b;
+  border: none;
   border-radius: 5px;
+  font-family: "Kosugi Maru", sans-serif;
+  font-size: 16px;
   cursor: pointer;
+  box-shadow: 2px 2px 3px rgba(0,0,0,0.1);
 }
 
 button:hover {
