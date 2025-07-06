@@ -1,8 +1,26 @@
-import { addDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  deleteDoc,
+  doc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 const db = window.db;
 
 let diaryData = [];
 let currentIndex = 0;
+
+// 日付整形関数（例：2025年7月6日 18:23）
+function formatDate(dateStr) {
+  const d = new Date(dateStr);
+  const y = d.getFullYear();
+  const m = d.getMonth() + 1;
+  const day = d.getDate();
+  const h = d.getHours();
+  const min = d.getMinutes().toString().padStart(2, '0');
+  return `${y}年${m}月${day}日 ${h}:${min}`;
+}
 
 // 起動時にFirestoreから取得
 window.addEventListener("load", async () => {
@@ -23,7 +41,7 @@ document.getElementById("diary-form").addEventListener("submit", async (e) => {
     return;
   }
 
-  const date = new Date().toLocaleString();
+  const date = new Date().toISOString(); // 保存はISO形式で統一
   const newEntry = { name, title, content, date };
 
   try {
@@ -60,8 +78,8 @@ document.getElementById("nextBtn").addEventListener("click", () => {
 async function loadEntries() {
   diaryData = [];
   const querySnapshot = await getDocs(collection(db, "diaries"));
-  querySnapshot.forEach((doc) => {
-    diaryData.push(doc.data());
+  querySnapshot.forEach((docSnap) => {
+    diaryData.push({ ...docSnap.data(), id: docSnap.id });
   });
   diaryData.sort((a, b) => new Date(b.date) - new Date(a.date));
   currentIndex = 0;
@@ -80,7 +98,24 @@ function displayEntry() {
     <div class="entry">
       <h3>${entry.title}</h3>
       <p>${entry.content}</p>
-      <small>by ${entry.name} ｜ ${entry.date}</small>
+      <small>by ${entry.name} ｜ ${formatDate(entry.date)}</small><br />
+      <button id="deleteBtn">この投稿を削除</button>
     </div>
   `;
+
+  // 削除機能
+  document.getElementById("deleteBtn").addEventListener("click", async () => {
+    const ok = confirm("この投稿を削除しますか？");
+    if (!ok) return;
+
+    try {
+      await deleteDoc(doc(db, "diaries", entry.id));
+      alert("削除したよ！");
+      await loadEntries();
+      displayEntry();
+    } catch (e) {
+      console.error("削除に失敗:", e);
+      alert("削除できなかったよ…");
+    }
+  });
 }
