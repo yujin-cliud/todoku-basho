@@ -1,105 +1,113 @@
-.post {
-  background-image: url("image/notepaper.png");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  /* 他のスタイル */
+body {
+  font-family: 'Zen Maru Gothic', sans-serif;
+  background-color: #f5deb3;
+  margin: 0;
+  padding: 0;
 }
 
-
-.form-container,
-.post {
-  background: #fff8dc;
-  border: 1px solid #aaa;
+.form-container {
+  max-width: 400px;
+  margin: 20px auto;
+  background-color: #fff8dc;
   padding: 16px;
-  margin: 16px auto;
-  width: 90%;
-  max-width: 600px;
-  font-family: 'Zen Maru Gothic', sans-serif;
   border-radius: 8px;
   box-shadow: 2px 2px 6px #ccc;
 }
 
-textarea {
+input, textarea {
   width: 100%;
-  height: 120px;
-  padding: 8px;
-  font-size: 16px;
-  background: #fdf6e3;
-  border: 1px solid #ccc;
-  resize: vertical;
-  line-height: 1.5;
-}
-
-input[type="text"],
-textarea {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;  /* ← これ重要 */
-  padding: 8px;
-  font-size: 16px;
   margin-bottom: 8px;
-  background: #fdf6e3;
+  padding: 10px;
+  font-size: 16px;
+  box-sizing: border-box;
+  border-radius: 6px;
   border: 1px solid #ccc;
-  border-radius: 4px;
-  font-family: inherit;
-  line-height: 1.5;
 }
-
 
 button {
-  display: block;
   width: 100%;
   padding: 12px;
-  background: #deb887;
+  font-size: 16px;
+  background-color: #deb887;
   border: none;
-  font-size: 18px;
-  font-weight: bold;
-  cursor: pointer;
   border-radius: 6px;
-  transition: background 0.3s;
+  cursor: pointer;
+  font-weight: bold;
 }
 
-button:hover {
-  background: #d2b48c;
+.view-toggle {
+  max-width: 400px;
+  margin: 16px auto;
+  text-align: center;
 }
 
-.post h3 {
-  margin-top: 0;
+.view-toggle button {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  background-color: #deb887;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
 }
 
-.post p {
-  white-space: pre-wrap;
+#diary-container {
+  max-width: 600px;
+  margin: 24px auto;
+  min-height: 300px;
 }
-.post {
-  background-image: url("image/notepaper.png");
+
+.entry {
+  background-image: url('image/notepaper.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-color: #fff8dc; /* 万が一読み込めなかったときの色 */
-  padding: 24px;
+  padding: 48px 32px;
   border-radius: 12px;
-  box-shadow: 2px 2px 6px #bbb;
-  margin: 24px auto;
-  max-width: 650px;
-  font-family: 'Zen Maru Gothic', sans-serif;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  animation: fadeIn 0.4s ease;
 }
 
+.entry h3 {
+  margin-top: 0;
+}
 
-/* 投稿画像を「貼られた写真」っぽく */
-.post img {
-  max-width: 100%;
-  border-radius: 4px;
-  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+.entry p {
+  white-space: pre-wrap;
+  margin-bottom: 12px;
+}
+
+.pager {
+  text-align: center;
   margin: 16px 0;
 }
 
-/* ユーザー名と日付の表示 */
-.post small {
-  display: block;
-  text-align: right;
-  font-size: 13px;
-  color: #666;
-  margin-top: 8px;
+.pager button {
+  padding: 8px 16px;
+  margin: 0 8px;
+  font-size: 14px;
+  border-radius: 6px;
+  background-color: #f0e0c0;
+  border: 1px solid #aaa;
+  cursor: pointer;
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.entry button#deleteBtn {
+  margin-top: 16px;
+  background-color: #f08080;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.entry button#deleteBtn:hover {
+  background-color: #cd5c5c;
+}

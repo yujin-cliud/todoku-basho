@@ -5,23 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>届く場所</title>
   <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic&display=swap" rel="stylesheet">
-
 </head>
 <body>
 
+  <!-- 投稿フォーム -->
   <div class="form-container">
-  <h2>今日の気持ちを届けよう</h2>
-  <input type="text" id="username" placeholder="お名前（省略可）" />
-  <input type="text" id="title" placeholder="タイトル" />
-  <textarea id="content" placeholder="ここに日記を書く…"></textarea>
-  <!-- 投稿フォームの中に追加 -->
-<input type="file" id="image" accept="image/*" />
-<button id="submit">投稿する</button>
-</div>
+    <input type="text" id="username" placeholder="お名前（省略可）" />
+    <input type="text" id="title" placeholder="タイトル" />
+    <textarea id="content" placeholder="ここに日記を書く…"></textarea>
+    <button id="submit">投稿する</button>
+  </div>
 
-  <div class="posts-container" id="posts">
-    <!-- 投稿がここに表示される -->
+  <!-- 表示切り替えボタン（省略可） -->
+  <div class="view-toggle">
+    <button id="switch-view">📖 1件表示</button>
+  </div>
+
+  <!-- 投稿1件表示エリア -->
+  <div id="diary-container"></div>
+
+  <!-- ページめくりボタン -->
+  <div class="pager">
+    <button id="prevBtn">◀ 前へ</button>
+    <button id="nextBtn">次へ ▶</button>
   </div>
 
   <script src="script.js"></script>
