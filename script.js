@@ -1,11 +1,3 @@
-import {
-  addDoc,
-  collection,
-  getDocs,
-  deleteDoc,
-  doc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
 const db = window.db;
 
 let diaryData = [];
