@@ -1,23 +1,27 @@
-// 📅 日付を「2025年7月6日（日） 午後2時35分」みたいに整える関数
-function formatDate(dateObj) {
-  const y = dateObj.getFullYear();
-  const m = dateObj.getMonth() + 1;
-  const d = dateObj.getDate();
-  const day = ["日", "月", "火", "水", "木", "金", "土"][dateObj.getDay()];
-  const h = dateObj.getHours();
-  const min = dateObj.getMinutes().toString().padStart(2, '0');
+// Firebase SDKから必要な機能をインポート
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, deleteDoc, doc } from "firebase/firestore";
 
-  const ampm = h < 12 ? "午前" : "午後";
-  const hour12 = h % 12 === 0 ? 12 : h % 12;
+// Firebase構成オブジェクト
+const firebaseConfig = {
+  apiKey: "AIzaSyB4e1nm-ZktpfSMPVW-umIiw6WQmxs0sqg",
+  authDomain: "todoku-basho.firebaseapp.com",
+  projectId: "todoku-basho",
+  storageBucket: "todoku-basho.firebasestorage.app",
+  messagingSenderId: "395140717821",
+  appId: "1:395140717821:web:b68a7dce7e5b6f3eb7b294"
+};
 
-  return `${y}年${m}月${d}日（${day}） ${ampm}${hour12}時${min}分`;
-}
+// Firebase 初期化
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
+// 投稿データ配列と表示インデックス
 let diaryData = [];
 let currentIndex = 0;
 
-// 📥 投稿処理
-document.getElementById('submit').addEventListener('click', () => {
+// ✅ 投稿処理
+document.getElementById('submit').addEventListener('click', async () => {
   const name = document.getElementById('username').value.trim() || "匿名さん";
   const title = document.getElementById('title').value.trim();
   const content = document.getElementById('content').value.trim();
@@ -27,22 +31,24 @@ document.getElementById('submit').addEventListener('click', () => {
     return;
   }
 
-  const dateObj = new Date();
-  const date = formatDate(dateObj); // ←ここで整形された日付を使う
+  const date = new Date().toLocaleString();
   const newEntry = { name, title, content, date };
 
-  diaryData.unshift(newEntry); // 新しい投稿を先頭に
-  localStorage.setItem("diaryData", JSON.stringify(diaryData)); // 保存
-  currentIndex = 0;
-  displayEntry();
+  try {
+    await addDoc(collection(db, "diaries"), newEntry);
+    alert("投稿が保存されたよ！");
+    loadEntries();
+  } catch (e) {
+    console.error("保存に失敗したよ:", e);
+    alert("保存に失敗したよ…");
+  }
 
-  // フォーム初期化
   document.getElementById('username').value = '';
   document.getElementById('title').value = '';
   document.getElementById('content').value = '';
 });
 
-// ◀ 前へ
+// ⬅ 前へ
 document.getElementById('prevBtn').addEventListener('click', () => {
   if (currentIndex < diaryData.length - 1) {
     currentIndex++;
@@ -50,7 +56,7 @@ document.getElementById('prevBtn').addEventListener('click', () => {
   }
 });
 
-// ▶ 次へ
+// ➡ 次へ
 document.getElementById('nextBtn').addEventListener('click', () => {
   if (currentIndex > 0) {
     currentIndex--;
@@ -76,24 +82,33 @@ function displayEntry() {
     </div>
   `;
 
-  // 🗑 削除処理
-  document.getElementById("deleteBtn").addEventListener("click", () => {
+  // 🗑 削除ボタン
+  document.getElementById("deleteBtn").addEventListener("click", async () => {
     const ok = confirm("この投稿を削除しますか？");
     if (!ok) return;
 
-    diaryData.splice(currentIndex, 1);
-    localStorage.setItem("diaryData", JSON.stringify(diaryData));
-
-    if (currentIndex > 0) currentIndex--;
-    displayEntry();
+    const id = entry.id;
+    try {
+      await deleteDoc(doc(db, "diaries", id));
+      alert("削除したよ！");
+      await loadEntries();
+    } catch (e) {
+      console.error("削除できなかった:", e);
+      alert("削除できなかったよ…");
+    }
   });
 }
 
-// 🔁 起動時にlocalStorageから読み込み
-window.addEventListener('load', () => {
-  const stored = localStorage.getItem("diaryData");
-  if (stored) {
-    diaryData = JSON.parse(stored);
-  }
+// 🔁 Firestore から投稿を取得して表示
+async function loadEntries() {
+  const q = query(collection(db, "diaries"), orderBy("date", "desc"));
+  const snapshot = await getDocs(q);
+  diaryData = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+  currentIndex = 0;
   displayEntry();
+}
+
+// 🔃 ページ読み込み時にFireStoreから取得
+window.addEventListener('load', () => {
+  loadEntries();
 });
