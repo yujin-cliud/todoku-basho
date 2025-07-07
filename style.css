@@ -39,13 +39,14 @@ button {
 }
 
 .entry {
-  background: url('image/note_background.png');
+  background-image: url("image/notepaper.png");
   background-size: cover;
   padding: 20px;
-  margin: 15px 0;
   border-radius: 10px;
-  box-shadow: 0 0 10px #aaa;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+  margin-bottom: 20px;
 }
+
 
 .navigation {
   text-align: center;
