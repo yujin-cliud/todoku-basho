@@ -13,7 +13,7 @@ let currentIndex = 0;
 document.getElementById("diary-form").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const name = document.getElementById("username").value.trim() || "匿名";
+  const name = document.getElementById("username").value.trim() || "匿名さん";
   const title = document.getElementById("title").value.trim();
   const content = document.getElementById("content").value.trim();
 
