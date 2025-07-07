@@ -1,113 +1,63 @@
 body {
-  font-family: 'Zen Maru Gothic', sans-serif;
   background-color: #f5deb3;
+  font-family: "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
   margin: 0;
   padding: 0;
+  display: flex;
+  justify-content: center;
 }
 
-.form-container {
-  max-width: 400px;
-  margin: 20px auto;
-  background-color: #fff8dc;
-  padding: 16px;
-  border-radius: 8px;
-  box-shadow: 2px 2px 6px #ccc;
+.container {
+  max-width: 600px;
+  padding: 20px;
+}
+
+form {
+  background-color: #fff8e1;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  box-shadow: 0 0 5px #aaa;
 }
 
 input, textarea {
   width: 100%;
-  margin-bottom: 8px;
-  padding: 10px;
-  font-size: 16px;
-  box-sizing: border-box;
-  border-radius: 6px;
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 4px;
   border: 1px solid #ccc;
 }
 
 button {
-  width: 100%;
-  padding: 12px;
-  font-size: 16px;
   background-color: #deb887;
   border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.view-toggle {
-  max-width: 400px;
-  margin: 16px auto;
-  text-align: center;
-}
-
-.view-toggle button {
-  width: 100%;
-  padding: 12px;
+  padding: 10px;
   font-size: 16px;
-  background-color: #deb887;
-  border: none;
-  border-radius: 6px;
+  width: 100%;
   cursor: pointer;
-  font-weight: bold;
-}
-
-#diary-container {
-  max-width: 600px;
-  margin: 24px auto;
-  min-height: 300px;
+  border-radius: 5px;
 }
 
 .entry {
-  background-image: url('image/notepaper.png');
+  background: url('image/note_background.png');
   background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  padding: 48px 32px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  animation: fadeIn 0.4s ease;
+  padding: 20px;
+  margin: 15px 0;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #aaa;
 }
 
-.entry h3 {
-  margin-top: 0;
-}
-
-.entry p {
-  white-space: pre-wrap;
-  margin-bottom: 12px;
-}
-
-.pager {
+.navigation {
   text-align: center;
-  margin: 16px 0;
+  margin-top: 10px;
 }
 
-.pager button {
-  padding: 8px 16px;
-  margin: 0 8px;
-  font-size: 14px;
-  border-radius: 6px;
-  background-color: #f0e0c0;
-  border: 1px solid #aaa;
-  cursor: pointer;
-}
+@media (max-width: 600px) {
+  .container {
+    padding: 10px;
+  }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateX(20px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-.entry button#deleteBtn {
-  margin-top: 16px;
-  background-color: #f08080;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  font-size: 14px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.entry button#deleteBtn:hover {
-  background-color: #cd5c5c;
+  button {
+    font-size: 18px;
+  }
 }
