@@ -1,64 +1,70 @@
 body {
   background-color: #f5deb3;
-  font-family: "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  font-family: "Yu Gothic", sans-serif;
+  text-align: center;
   margin: 0;
   padding: 0;
-  display: flex;
-  justify-content: center;
 }
 
 .container {
   max-width: 600px;
+  margin: 30px auto;
   padding: 20px;
 }
 
 form {
-  background-color: #fff8e1;
-  padding: 15px;
+  background-color: #fff8dc;
+  padding: 20px;
   border-radius: 10px;
-  margin-bottom: 15px;
-  box-shadow: 0 0 5px #aaa;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 input, textarea {
   width: 100%;
-  padding: 8px;
-  margin-bottom: 10px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+  margin: 10px 0;
+  padding: 10px;
+  font-size: 16px;
 }
 
 button {
   background-color: #deb887;
   border: none;
-  padding: 10px;
+  padding: 12px 20px;
   font-size: 16px;
-  width: 100%;
-  cursor: pointer;
+  margin: 10px 0;
   border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+.show-count {
+  margin: 15px;
+  background-color: #deb887;
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: bold;
 }
 
 .entry {
-  background-image: url("image/notepaper.png");
+  background-image: url('notepaper.png');
   background-size: cover;
   padding: 20px;
+  margin-top: 20px;
   border-radius: 10px;
-  box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
-  margin-bottom: 20px;
+  text-align: left;
+  font-size: 16px;
 }
 
-
-.navigation {
-  text-align: center;
-  margin-top: 10px;
+.entry h3 {
+  margin-top: 0;
 }
 
-@media (max-width: 600px) {
-  .container {
-    padding: 10px;
-  }
-
-  button {
-    font-size: 18px;
-  }
+.delete-btn {
+  background-color: #e57373;
+  color: white;
+  width: 100%;
+  margin-top: 15px;
 }

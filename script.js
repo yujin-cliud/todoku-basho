@@ -1,15 +1,12 @@
-// firebase の関数を window から取得
-const db = window.db;
-const collection = window.collection;
-const addDoc = window.addDoc;
-const getDocs = window.getDocs;
-const deleteDoc = window.deleteDoc;
-const doc = window.doc;
-
 let diaryData = [];
 let currentIndex = 0;
 
-// 投稿処理
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadEntries();
+  displayEntry();
+  updateCount();
+});
+
 document.getElementById("diary-form").addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -22,32 +19,32 @@ document.getElementById("diary-form").addEventListener("submit", async (e) => {
     return;
   }
 
-  const date = new Date().toISOString(); // データはISO形式で保存
+  const date = new Date().toISOString();
 
   try {
-    await addDoc(collection(db, "diaries"), {
+    await window.addDoc(window.collection(window.db, "diaries"), {
       name,
       title,
       content,
-      date
+      date,
     });
-    alert("投稿が保存されたよ！");
+
+    document.getElementById("username").value = "";
+    document.getElementById("title").value = "";
+    document.getElementById("content").value = "";
+
     await loadEntries();
     displayEntry();
-  } catch (error) {
-    console.error("保存に失敗:", error);
-    alert("保存できなかったよ…");
+    updateCount();
+  } catch (err) {
+    alert("投稿に失敗したよ…");
+    console.error(err);
   }
-
-  document.getElementById("username").value = "";
-  document.getElementById("title").value = "";
-  document.getElementById("content").value = "";
 });
 
-// 日記の読み込み
 async function loadEntries() {
   diaryData = [];
-  const querySnapshot = await getDocs(collection(db, "diaries"));
+  const querySnapshot = await window.getDocs(window.collection(window.db, "diaries"));
   querySnapshot.forEach((docSnap) => {
     diaryData.push({ ...docSnap.data(), id: docSnap.id });
   });
@@ -55,7 +52,6 @@ async function loadEntries() {
   currentIndex = 0;
 }
 
-// 表示処理
 function displayEntry() {
   const container = document.getElementById("diary-container");
   container.innerHTML = "";
@@ -63,39 +59,41 @@ function displayEntry() {
   if (!diaryData[currentIndex]) return;
 
   const entry = diaryData[currentIndex];
-  const displayDate = formatDate(entry.date);
+  const date = new Date(entry.date);
 
   container.innerHTML = `
     <div class="entry">
       <h3>${entry.title}</h3>
       <p>${entry.content}</p>
-      <small>by ${entry.name} ｜ ${displayDate}</small><br />
-      <button id="deleteBtn">この投稿を削除</button>
+      <p><small>by ${entry.name} ｜ ${formatDate(date)}</small></p>
+      <button class="delete-btn">この投稿を削除</button>
     </div>
   `;
 
-  document.getElementById("deleteBtn").addEventListener("click", async () => {
-    if (!confirm("この投稿を削除しますか？")) return;
+  document.querySelector(".delete-btn").addEventListener("click", async () => {
+    const confirmDelete = confirm("この投稿を削除する？");
+    if (!confirmDelete) return;
 
     try {
-      await deleteDoc(doc(db, "diaries", entry.id));
-      alert("削除したよ！");
+      await window.deleteDoc(window.doc(window.db, "diaries", entry.id));
       await loadEntries();
       displayEntry();
-    } catch (e) {
-      console.error("削除失敗:", e);
-      alert("削除できなかったよ…");
+      updateCount();
+    } catch (err) {
+      alert("削除に失敗したよ…");
+      console.error(err);
     }
   });
 }
 
-// 日付の整形
-function formatDate(dateStr) {
-  const date = new Date(dateStr);
+function updateCount() {
+  document.getElementById("count").textContent = diaryData.length;
+}
+
+function formatDate(date) {
   return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
 }
 
-// ページめくり
 document.getElementById("prevBtn").addEventListener("click", () => {
   if (currentIndex < diaryData.length - 1) {
     currentIndex++;
@@ -108,9 +106,4 @@ document.getElementById("nextBtn").addEventListener("click", () => {
     currentIndex--;
     displayEntry();
   }
-});
-
-document.getElementById("loadBtn").addEventListener("click", async () => {
-  await loadEntries();
-  displayEntry();
 });
