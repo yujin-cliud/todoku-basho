@@ -27,6 +27,7 @@ document.getElementById('diary-form').addEventListener("submit", async (e) => {
   }
 
   document.getElementById('diary-form').reset();
+  autoGrow(document.getElementById("content"));
 });
 
 async function loadEntries() {
@@ -93,7 +94,9 @@ window.addEventListener("DOMContentLoaded", async () => {
 
 // 📌 textarea 高さ自動調整
 const textarea = document.getElementById("content");
-textarea.addEventListener("input", () => {
-  textarea.style.height = "auto";
-  textarea.style.height = `${textarea.scrollHeight}px`;
-});
+textarea.addEventListener("input", () => autoGrow(textarea));
+
+function autoGrow(el) {
+  el.style.height = "auto";
+  el.style.height = `${el.scrollHeight}px`;
+}
