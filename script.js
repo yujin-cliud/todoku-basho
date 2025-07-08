@@ -39,8 +39,7 @@ async function loadEntries() {
 
   diaryData.sort((a, b) => new Date(b.date) - new Date(a.date));
   currentIndex = 0;
-  document.getElementById('display-count').textContent = diaryData.length;
-}
+  }
 
 function formatDate(isoDate) {
   const date = new Date(isoDate);
@@ -92,7 +91,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   displayEntry();
 });
 
-// 📌 textarea 高さ自動調整
+// textarea 高さ自動調整
 const textarea = document.getElementById("content");
 textarea.addEventListener("input", () => autoGrow(textarea));
 

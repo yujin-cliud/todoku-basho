@@ -1,5 +1,5 @@
 body {
-  background-color: #f5deb3; /* わら色 */
+  background-color: #ffffff;
   font-family: "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
   margin: 0;
   padding: 16px;
@@ -8,12 +8,10 @@ body {
 .form-wrapper {
   max-width: 500px;
   margin: 0 auto;
-  background: url("notepaper.png") no-repeat center top;
-  background-size: cover;
+  background-color: #f5deb3;
   padding: 24px;
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  background-color: #fff5dc;
 }
 
 form input,
@@ -26,10 +24,11 @@ form textarea {
   font-size: 16px;
   box-sizing: border-box;
   resize: none;
+  background-color: #ffffff; /* ← 入力欄の中は白 */
 }
 
 form button {
-  background-color: #8fb88f;
+  background-color: #d2b48c; /* 淡い茶色 */
   color: white;
   padding: 10px 20px;
   font-size: 16px;
@@ -40,7 +39,7 @@ form button {
 }
 
 form button:hover {
-  background-color: #6b9e6b;
+  background-color: #c49b72;
 }
 
 .display-toggle {
@@ -93,7 +92,7 @@ form button:hover {
   background-color: #c9302c;
 }
 
-/* 📱スマホ対応 */
+/* スマホ対応 */
 @media (max-width: 600px) {
   body {
     padding: 10px;
