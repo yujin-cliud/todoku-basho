@@ -1,45 +1,32 @@
 let diaryData = [];
 let currentIndex = 0;
 
-document.addEventListener("DOMContentLoaded", async () => {
-  await loadEntries();
-  displayEntry();
-  updateCount();
-});
-
-document.getElementById("diary-form").addEventListener("submit", async (e) => {
+document.getElementById('diary-form').addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const name = document.getElementById("username").value.trim() || "匿名さん";
-  const title = document.getElementById("title").value.trim();
-  const content = document.getElementById("content").value.trim();
+  const name = document.getElementById('username').value.trim() || "匿名さん";
+  const title = document.getElementById('title').value.trim();
+  const content = document.getElementById('content').value.trim();
 
   if (!title || !content) {
-    alert("タイトルと内容を入力してね！");
+    alert("タイトルと本文を入力してね！");
     return;
   }
 
   const date = new Date().toISOString();
+  const newEntry = { name, title, content, date };
 
   try {
-    await window.addDoc(window.collection(window.db, "diaries"), {
-      name,
-      title,
-      content,
-      date,
-    });
-
-    document.getElementById("username").value = "";
-    document.getElementById("title").value = "";
-    document.getElementById("content").value = "";
-
+    await window.addDoc(window.collection(window.db, "diaries"), newEntry);
+    alert("投稿が保存されたよ！");
     await loadEntries();
     displayEntry();
-    updateCount();
-  } catch (err) {
-    alert("投稿に失敗したよ…");
-    console.error(err);
+  } catch (e) {
+    console.error("保存に失敗:", e);
+    alert("保存に失敗したよ…");
   }
+
+  document.getElementById('diary-form').reset();
 });
 
 async function loadEntries() {
@@ -48,50 +35,41 @@ async function loadEntries() {
   querySnapshot.forEach((docSnap) => {
     diaryData.push({ ...docSnap.data(), id: docSnap.id });
   });
+
   diaryData.sort((a, b) => new Date(b.date) - new Date(a.date));
   currentIndex = 0;
+  document.getElementById('display-count').textContent = diaryData.length;
+}
+
+function formatDate(isoDate) {
+  const date = new Date(isoDate);
+  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
 }
 
 function displayEntry() {
   const container = document.getElementById("diary-container");
   container.innerHTML = "";
 
-  if (!diaryData[currentIndex]) return;
-
   const entry = diaryData[currentIndex];
-  const date = new Date(entry.date);
+  if (!entry) return;
 
   container.innerHTML = `
     <div class="entry">
       <h3>${entry.title}</h3>
       <p>${entry.content}</p>
-      <p><small>by ${entry.name} ｜ ${formatDate(date)}</small></p>
-      <button class="delete-btn">この投稿を削除</button>
+      <small>by ${entry.name} ｜ ${formatDate(entry.date)}</small><br />
+      <button id="deleteBtn">この投稿を削除</button>
     </div>
   `;
 
-  document.querySelector(".delete-btn").addEventListener("click", async () => {
-    const confirmDelete = confirm("この投稿を削除する？");
-    if (!confirmDelete) return;
-
-    try {
-      await window.deleteDoc(window.doc(window.db, "diaries", entry.id));
-      await loadEntries();
-      displayEntry();
-      updateCount();
-    } catch (err) {
-      alert("削除に失敗したよ…");
-      console.error(err);
-    }
+  document.getElementById("deleteBtn").addEventListener("click", async () => {
+    const ok = confirm("この投稿を削除する？");
+    if (!ok) return;
+    await window.deleteDoc(window.doc(window.db, "diaries", entry.id));
+    alert("削除したよ！");
+    await loadEntries();
+    displayEntry();
   });
-}
-
-function updateCount() {
-  document.getElementById("count").textContent = diaryData.length;
-}
-
-function formatDate(date) {
-  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
 }
 
 document.getElementById("prevBtn").addEventListener("click", () => {
@@ -106,4 +84,16 @@ document.getElementById("nextBtn").addEventListener("click", () => {
     currentIndex--;
     displayEntry();
   }
+});
+
+window.addEventListener("DOMContentLoaded", async () => {
+  await loadEntries();
+  displayEntry();
+});
+
+// 📌 textarea 高さ自動調整
+const textarea = document.getElementById("content");
+textarea.addEventListener("input", () => {
+  textarea.style.height = "auto";
+  textarea.style.height = `${textarea.scrollHeight}px`;
 });
