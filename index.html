@@ -5,17 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>届く場所</title>
   <link rel="stylesheet" href="style.css" />
-  <!-- Firebase CDN -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      addDoc,
-      getDocs,
-      deleteDoc,
-      doc
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB4e1nm-ZktpfSMPVW-umIiw6WQmxs0sqg",
@@ -37,24 +29,24 @@
   </script>
 </head>
 <body>
-  <div class="container">
+  <div class="form-wrapper">
     <form id="diary-form">
-      <input id="username" type="text" placeholder="お名前（省略可）" />
-      <input id="title" type="text" placeholder="タイトル" />
-      <textarea id="content" placeholder="ここに日記を書く…"></textarea>
-      <button type="submit">投稿する</button>
+      <input type="text" id="username" placeholder="お名前（省略可）" />
+      <input type="text" id="title" placeholder="タイトル" />
+      <textarea id="content" placeholder="ここに日記を書く…" rows="3"></textarea>
+      <button type="submit" id="submit">投稿する</button>
     </form>
+  </div>
 
-    <div class="show-count">
-      📖 <span id="count">0</span>件表示
-    </div>
+  <div class="display-toggle">
+    📖 <span id="display-count">0</span>件表示
+  </div>
 
-    <div id="diary-container"></div>
+  <div id="diary-container" class="diary-entry"></div>
 
-    <div class="nav-buttons">
-      <button id="prevBtn">◀ 前へ</button>
-      <button id="nextBtn">次へ ▶</button>
-    </div>
+  <div class="nav-buttons">
+    <button id="prevBtn">◀ 前へ</button>
+    <button id="nextBtn">次へ ▶</button>
   </div>
 
   <script type="module" src="script.js"></script>

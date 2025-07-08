@@ -1,70 +1,112 @@
 body {
-  background-color: #f5deb3;
-  font-family: "Yu Gothic", sans-serif;
-  text-align: center;
+  background-color: #f5deb3; /* わら色 */
+  font-family: 'Hiragino Maru Gothic ProN', sans-serif;
   margin: 0;
   padding: 0;
+  text-align: center;
 }
 
-.container {
-  max-width: 600px;
+.form-wrapper {
   margin: 30px auto;
+  width: 90%;
+  max-width: 600px;
+  background-color: #fff9e5;
   padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 }
 
-form {
-  background-color: #fff8dc;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-input, textarea {
+form input,
+form textarea {
   width: 100%;
-  margin: 10px 0;
-  padding: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 2px solid #c2a66e;
+  border-radius: 10px;
   font-size: 16px;
+  box-sizing: border-box;
+  resize: none;
 }
 
-button {
-  background-color: #deb887;
-  border: none;
-  padding: 12px 20px;
+form textarea {
+  overflow: hidden;
+  min-height: 80px;
+}
+
+form button {
+  padding: 10px 24px;
   font-size: 16px;
-  margin: 10px 0;
-  border-radius: 5px;
+  background-color: #c2a66e;
+  color: white;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
 }
 
-button:hover {
-  opacity: 0.8;
+form button:hover {
+  background-color: #aa8f56;
 }
 
-.show-count {
-  margin: 15px;
-  background-color: #deb887;
-  padding: 10px;
-  border-radius: 5px;
-  font-weight: bold;
+.display-toggle {
+  margin: 16px 0;
 }
 
 .entry {
   background-image: url('notepaper.png');
   background-size: cover;
+  background-position: center;
   padding: 20px;
-  margin-top: 20px;
-  border-radius: 10px;
-  text-align: left;
-  font-size: 16px;
+  margin: 20px auto;
+  width: 90%;
+  max-width: 600px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
 .entry h3 {
-  margin-top: 0;
+  margin: 0 0 10px;
+  font-size: 20px;
 }
 
-.delete-btn {
+.entry p {
+  font-size: 16px;
+  white-space: pre-wrap;
+}
+
+.entry small {
+  display: block;
+  margin-top: 10px;
+  color: #666;
+}
+
+.entry button {
+  margin-top: 10px;
   background-color: #e57373;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
   color: white;
-  width: 100%;
-  margin-top: 15px;
+  cursor: pointer;
+}
+
+.entry button:hover {
+  background-color: #d32f2f;
+}
+
+.nav-buttons {
+  margin: 24px 0;
+}
+
+.nav-buttons button {
+  margin: 0 8px;
+  padding: 10px 20px;
+  border: none;
+  background-color: #a1887f;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.nav-buttons button:hover {
+  background-color: #8d6e63;
 }
