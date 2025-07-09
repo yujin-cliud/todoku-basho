@@ -24,11 +24,11 @@ form textarea {
   font-size: 16px;
   box-sizing: border-box;
   resize: none;
-  background-color: #ffffff; /* ← 入力欄の中は白 */
+  background-color: #ffffff;
 }
 
 form button {
-  background-color: #d2b48c; /* 淡い茶色 */
+  background-color: #d2b48c;
   color: white;
   padding: 10px 20px;
   font-size: 16px;
@@ -108,4 +108,29 @@ form button:hover {
     width: 100%;
     margin: 8px 0;
   }
+}
+
+/* 上部タイトルとロゴ */
+.page-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.app-title {
+  font-size: 36px;
+  font-weight: normal;
+  color: #5c4a1d;
+  font-family:
+    "Zen Maru Gothic",
+    "Kosugi Maru",
+    "Hiragino Maru Gothic Pro",
+    "YuGothic",
+    sans-serif;
+  margin: 16px 0 8px;
+}
+
+.logo-image {
+  width: 120px;
+  height: auto;
+  margin-bottom: 8px;
 }
