@@ -110,27 +110,127 @@ form button:hover {
   }
 }
 
-/* 上部タイトルとロゴ */
-.page-header {
-  text-align: center;
-  margin-bottom: 24px;
+.app-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 30px auto 20px;
 }
 
-.app-title {
-  font-size: 36px;
+.header-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  opacity: 0.95;
+}
+
+.header-title {
+  font-family: 'Arial', 'ヒラギノ丸ゴ ProN', sans-serif;
+  font-size: 28px;
+  color: #5c3d1c;
   font-weight: normal;
-  color: #5c4a1d;
-  font-family:
-    "Zen Maru Gothic",
-    "Kosugi Maru",
-    "Hiragino Maru Gothic Pro",
-    "YuGothic",
-    sans-serif;
-  margin: 16px 0 8px;
+  letter-spacing: 2px;
 }
 
-.logo-image {
-  width: 120px;
-  height: auto;
-  margin-bottom: 8px;
+
+/* 検索 */
+.search-wrapper {
+  max-width: 500px;
+  margin: 16px auto;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+#searchInput {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 2px solid #888;
+}
+
+#searchBtn,
+#clearBtn {
+  padding: 10px 16px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #d2b48c;
+  color: white;
+  cursor: pointer;
+}
+
+#searchBtn:hover,
+#clearBtn:hover {
+  background-color: #c49b72;
+}
+
+/* タグ表示 */
+.tag {
+  display: inline-block;
+  background-color: #f0e0b2;
+  color: #5c4a1d;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-right: 4px;
+}
+
+.tag:hover {
+  background-color: #e2cfa4;
+}
+
+/* 💛 お気に入りボタン */
+.likeBtn {
+  margin-top: 10px;
+  background-color: #f7d8a9;
+  color: #5c3d1c;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.likeBtn:hover {
+  background-color: #f4c88a;
+}
+
+.likeCount {
+  margin-left: 8px;
+  font-size: 14px;
+  color: #333;
+}
+/* お気に入りボタン（未押下） */
+.likeBtn {
+  margin-top: 10px;
+  background-color: #f7d8a9;
+  color: #5c3d1c;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.likeBtn:hover {
+  background-color: #f4c88a;
+}
+
+/* お気に入り済（無効状態） */
+.likeBtn:disabled {
+  background-color: #e0e0e0;
+  color: #888888;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.likeCount {
+  margin-left: 8px;
+  font-size: 14px;
+  color: #333;
 }

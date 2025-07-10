@@ -4,14 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>届く場所</title>
-  <!-- やわらかい日本語フォントを読み込み -->
   <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Zen+Maru+Gothic&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 
   <!-- Firebase CDN -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB4e1nm-ZktpfSMPVW-umIiw6WQmxs0sqg",
@@ -30,25 +29,30 @@
     window.getDocs = getDocs;
     window.deleteDoc = deleteDoc;
     window.doc = doc;
+    window.updateDoc = updateDoc;
   </script>
 </head>
 <body>
-  <header class="page-header">
-    <h1 class="app-title">届く場所</h1>
-    <img src="symbol.png" alt="届く場所のロゴ" class="logo-image" />
-  </header>
+  <header class="app-header">
+  <img src="symbol.png" alt="届く場所ロゴ" class="header-logo" />
+  <h1 class="header-title">届く場所</h1>
+</header>
+
 
   <div class="form-wrapper">
     <form id="diary-form">
       <input type="text" id="username" placeholder="お名前（省略可）" />
       <input type="text" id="title" placeholder="タイトル" />
       <textarea id="content" placeholder="ここに日記を書く…" rows="3"></textarea>
+      <input type="text" id="tags" placeholder="タグ（カンマ区切り）" />
       <button type="submit" id="submit">投稿する</button>
     </form>
   </div>
 
-  <div class="display-toggle">
-    <!-- スペース維持のため中身空でOK -->
+  <div class="search-wrapper">
+    <input type="text" id="searchInput" placeholder="キーワードで検索（タグ・タイトル・本文）" />
+    <button id="searchBtn">検索</button>
+    <button id="clearBtn">クリア</button>
   </div>
 
   <div id="diary-container" class="diary-entry"></div>
