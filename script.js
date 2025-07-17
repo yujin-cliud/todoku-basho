@@ -1,3 +1,4 @@
+
 let diaryData = [];
 let filteredData = [];
 let currentIndex = 0;
@@ -162,7 +163,20 @@ document.addEventListener("click", (e) => {
 window.addEventListener("DOMContentLoaded", async () => {
   await loadEntries();
   displayEntry();
+
+  // スプラッシュ画面をフェードアウトして非表示に
+  const splash = document.getElementById("splash-screen");
+  if (splash) {
+    // 1.5秒後にふわっと消す
+    setTimeout(() => {
+      splash.style.opacity = "0"; // 透明にする
+      setTimeout(() => {
+        splash.style.display = "none"; // 完全に消す
+      }, 1000); // ふわっと1秒かけて消す
+    }, 1500); // 最初に1.5秒表示する
+  }
 });
+
 
 // textarea 自動調整
 const textarea = document.getElementById("content");
