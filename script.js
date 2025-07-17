@@ -87,7 +87,39 @@ function displayEntry() {
     displayEntry();
   });
 
-  // お気に入り
+  
+  // コメント表示エリア
+  const commentSection = document.createElement("div");
+  commentSection.innerHTML = `
+    <div class="comment-section">
+      <h4>コメント</h4>
+      <div id="comment-list"></div>
+      <textarea id="comment-input" rows="2" placeholder="コメントを書く…" style="width:100%; margin-top:10px;"></textarea>
+      <button id="comment-submit" style="margin-top:8px;">コメント送信</button>
+    </div>
+  `;
+  container.appendChild(commentSection);
+
+  // コメント送信処理
+  document.getElementById("comment-submit").addEventListener("click", async () => {
+    const commentText = document.getElementById("comment-input").value.trim();
+    if (!commentText) return alert("コメントを入力してな");
+
+    const commentData = {
+      text: commentText,
+      date: new Date().toISOString()
+    };
+
+    const commentRef = window.collection(window.db, "diaries", entry.id, "comments");
+    await window.addDoc(commentRef, commentData);
+
+    document.getElementById("comment-input").value = "";
+    loadComments(entry.id);
+  });
+
+  loadComments(entry.id);
+
+// お気に入り
   const likeBtn = document.querySelector(".likeBtn");
   if (!alreadyLiked && likeBtn) {
     likeBtn.addEventListener("click", async () => {
@@ -185,4 +217,20 @@ textarea.addEventListener("input", () => autoGrow(textarea));
 function autoGrow(el) {
   el.style.height = "auto";
   el.style.height = `${el.scrollHeight}px`;
+}
+
+
+async function loadComments(entryId) {
+  const commentList = document.getElementById("comment-list");
+  commentList.innerHTML = "読み込み中…";
+
+  const commentRef = window.collection(window.db, "diaries", entryId, "comments");
+  const commentSnapshot = await window.getDocs(commentRef);
+
+  const comments = [];
+  commentSnapshot.forEach(doc => comments.push(doc.data()));
+
+  commentList.innerHTML = comments.length
+    ? comments.map(c => `<p style="margin: 4px 0;">🗨 ${c.text} <small>（${formatDate(c.date)}）</small></p>`).join("")
+    : "<p>コメントはまだありません</p>";
 }
