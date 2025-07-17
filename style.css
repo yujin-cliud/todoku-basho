@@ -267,3 +267,49 @@ form button:hover {
     transform: scale(1);    /* 元の大きさ・完全表示 */
   }
 }
+/* コメント欄の全体 */
+.comment-section {
+  margin-top: 20px;
+  padding: 12px;
+  border-top: 2px dashed #ccc;
+  background-color: #fffaf0;
+  border-radius: 10px;
+}
+
+/* コメントタイトル */
+.comment-section h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: #5c3d1c;
+}
+
+/* コメント入力欄（枠を細く＆角丸） */
+#comment-input {
+  width: 100%;
+  padding: 10px;
+  font-size: 15px;
+  border: 1.5px solid #a27c52;  /* 細め＆茶系 */
+  border-radius: 10px;
+  background-color: #ffffff;
+  resize: none;
+  box-sizing: border-box;
+  font-family: 'Kosugi Maru', 'Zen Maru Gothic', sans-serif;
+}
+
+/* コメント送信ボタン（やさしいレトロ調） */
+#comment-submit {
+  margin-top: 8px;
+  padding: 8px 14px;
+  font-size: 14px;
+  background-color: #d2b48c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Kosugi Maru', 'Zen Maru Gothic', sans-serif;
+  transition: background-color 0.3s;
+}
+
+#comment-submit:hover {
+  background-color: #c49b72;
+}
