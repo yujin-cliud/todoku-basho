@@ -359,6 +359,7 @@ form button:hover {
   .app-header {
     justify-content: flex-start !important;
     margin-left: 16px;
+    padding-left: 0 !important;  /* ← スマホでは左パディング無効に */
   }
 
   .header-logo {
