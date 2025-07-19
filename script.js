@@ -1,4 +1,3 @@
-
 let diaryData = [];
 let filteredData = [];
 let currentIndex = 0;
@@ -13,12 +12,14 @@ document.getElementById('diary-form').addEventListener("submit", async (e) => {
   const tags = tagsInput.value.split(',').map(tag => tag.trim()).filter(tag => tag !== "");
 
   if (!title || !content) {
-    alert("タイトルと本文を入力してね！");
+    alert("タイトルと本文を入力してな！");
     return;
   }
 
   const date = new Date().toISOString();
-  const newEntry = { name, title, content, tags, date, likes: 0 };
+  const uid = window.currentUser?.uid || null;
+
+  const newEntry = { name, title, content, tags, date, likes: 0, uid };
 
   try {
     await window.addDoc(window.collection(window.db, "diaries"), newEntry);
@@ -61,6 +62,8 @@ function displayEntry() {
   const likedKey = `liked_${entry.id}`;
   const alreadyLiked = localStorage.getItem(likedKey);
 
+  const isOwner = entry.uid === window.currentUser?.uid;
+
   container.innerHTML = `
     <div class="entry">
       <h3>${entry.title}</h3>
@@ -73,39 +76,40 @@ function displayEntry() {
         ${alreadyLiked ? '💛 お気に入り済み' : '💛 お気に入り'}
       </button>
       <span class="likeCount">${entry.likes || 0}件のお気に入り</span><br/>
-      <button id="deleteBtn">この投稿を削除</button>
+      ${isOwner ? `<button id="deleteBtn">この投稿を削除</button>` : ""}
     </div>
   `;
 
-  // 削除
-  document.getElementById("deleteBtn").addEventListener("click", async () => {
-    const ok = confirm("この投稿を削除する？");
-    if (!ok) return;
-    await window.deleteDoc(window.doc(window.db, "diaries", entry.id));
-    alert("削除したよ！");
-    await loadEntries();
-    displayEntry();
-  });
+  if (isOwner) {
+    document.getElementById("deleteBtn").addEventListener("click", async () => {
+      const ok = confirm("この投稿を削除する？");
+      if (!ok) return;
+      await window.deleteDoc(window.doc(window.db, "diaries", entry.id));
+      alert("削除したよ！");
+      await loadEntries();
+      displayEntry();
+    });
+  }
 
-  
-  // コメント表示エリア
+  // コメントセクション
   const commentSection = document.createElement("div");
+  commentSection.classList.add("comment-section");
   commentSection.innerHTML = `
-    <div class="comment-section">
-      <h4>コメント</h4>
-      <div id="comment-list"></div>
-      <textarea id="comment-input" rows="2" placeholder="コメントを書く…" style="width:100%; margin-top:10px;"></textarea>
-      <button id="comment-submit" style="margin-top:8px;">コメント送信</button>
-    </div>
+    <h4>コメント</h4>
+    <div id="comment-list"></div>
+    <input type="text" id="comment-name" placeholder="お名前（省略可）" class="comment-name-input" />
+    <textarea id="comment-input" rows="2" placeholder="コメントを書く…" class="comment-textarea"></textarea>
+    <button id="comment-submit" class="comment-submit-btn">コメント送信</button>
   `;
   container.appendChild(commentSection);
 
-  // コメント送信処理
   document.getElementById("comment-submit").addEventListener("click", async () => {
+    const name = document.getElementById("comment-name").value.trim() || "匿名さん";
     const commentText = document.getElementById("comment-input").value.trim();
     if (!commentText) return alert("コメントを入力してな");
 
     const commentData = {
+      name,
       text: commentText,
       date: new Date().toISOString()
     };
@@ -114,22 +118,26 @@ function displayEntry() {
     await window.addDoc(commentRef, commentData);
 
     document.getElementById("comment-input").value = "";
+    document.getElementById("comment-name").value = "";
     loadComments(entry.id);
   });
 
   loadComments(entry.id);
+}
 
-// お気に入り
-  const likeBtn = document.querySelector(".likeBtn");
-  if (!alreadyLiked && likeBtn) {
-    likeBtn.addEventListener("click", async () => {
-      const newLikes = (entry.likes || 0) + 1;
-      await window.updateDoc(window.doc(window.db, "diaries", entry.id), { likes: newLikes });
-      localStorage.setItem(likedKey, "true"); // 一回押した記録
-      await loadEntries();
-      displayEntry(); // 再描画で「お気に入り済み」に切り替え
-    });
-  }
+async function loadComments(entryId) {
+  const commentList = document.getElementById("comment-list");
+  commentList.innerHTML = "読み込み中…";
+
+  const commentRef = window.collection(window.db, "diaries", entryId, "comments");
+  const commentSnapshot = await window.getDocs(commentRef);
+
+  const comments = [];
+  commentSnapshot.forEach(doc => comments.push(doc.data()));
+
+  commentList.innerHTML = comments.length
+    ? comments.map(c => `<p style="margin: 4px 0;">🗨 <strong>${c.name || "匿名さん"}</strong>：${c.text} <small>（${formatDate(c.date)}）</small></p>`).join("")
+    : "<p>コメントはまだありません</p>";
 }
 
 // ページナビ
@@ -173,7 +181,6 @@ document.getElementById("clearBtn").addEventListener("click", () => {
   displayEntry();
 });
 
-// タグクリックで検索バー反映
 document.addEventListener("click", (e) => {
   if (e.target.classList.contains("tag")) {
     const selectedTag = e.target.dataset.tag.toLowerCase();
@@ -196,41 +203,21 @@ window.addEventListener("DOMContentLoaded", async () => {
   await loadEntries();
   displayEntry();
 
-  // スプラッシュ画面をフェードアウトして非表示に
   const splash = document.getElementById("splash-screen");
   if (splash) {
-    // 1.5秒後にふわっと消す
     setTimeout(() => {
-      splash.style.opacity = "0"; // 透明にする
+      splash.style.opacity = "0";
       setTimeout(() => {
-        splash.style.display = "none"; // 完全に消す
-      }, 1000); // ふわっと1秒かけて消す
-    }, 1500); // 最初に1.5秒表示する
+        splash.style.display = "none";
+      }, 1000);
+    }, 1500);
   }
 });
 
-
-// textarea 自動調整
 const textarea = document.getElementById("content");
 textarea.addEventListener("input", () => autoGrow(textarea));
 
 function autoGrow(el) {
   el.style.height = "auto";
   el.style.height = `${el.scrollHeight}px`;
-}
-
-
-async function loadComments(entryId) {
-  const commentList = document.getElementById("comment-list");
-  commentList.innerHTML = "読み込み中…";
-
-  const commentRef = window.collection(window.db, "diaries", entryId, "comments");
-  const commentSnapshot = await window.getDocs(commentRef);
-
-  const comments = [];
-  commentSnapshot.forEach(doc => comments.push(doc.data()));
-
-  commentList.innerHTML = comments.length
-    ? comments.map(c => `<p style="margin: 4px 0;">🗨 ${c.text} <small>（${formatDate(c.date)}）</small></p>`).join("")
-    : "<p>コメントはまだありません</p>";
 }
