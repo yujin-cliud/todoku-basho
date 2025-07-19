@@ -355,3 +355,18 @@ form button:hover {
 .comment-submit-btn:hover {
   background-color: #c49b72;
 }
+@media (max-width: 600px) {
+  .app-header {
+    justify-content: flex-start !important;
+    margin-left: 16px;
+  }
+
+  .header-logo {
+    margin-right: 6px;
+  }
+
+  .header-title {
+    font-size: 20px;
+    text-align: left;
+  }
+}
