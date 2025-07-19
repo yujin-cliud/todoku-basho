@@ -112,26 +112,32 @@ form button:hover {
 
 .app-header {
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 12px;
-  margin: 30px auto 20px;
+  gap: 8px;
+  margin: 12px auto 18px;
+  justify-content: flex-start;
+  max-width: 700px;     /* ← 最大幅だけ決めて中央寄せ */
+  width: 90%;           /* ← 画面に対して相対的な幅 */
+  padding-left: 150px;   /* ← 左にちょっと寄せる */
 }
 
 .header-logo {
-  width: 40px;
-  height: 40px;
+  width: 28px;
+  height: 28px;
   object-fit: contain;
   opacity: 0.95;
 }
-
 .header-title {
-  font-family: 'Arial', 'ヒラギノ丸ゴ ProN', sans-serif;
-  font-size: 28px;
+  font-family: 'Kosugi Maru', 'Zen Maru Gothic', sans-serif;
+  font-size: 22px;
   color: #5c3d1c;
   font-weight: normal;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
+  margin: 0; /* ← titleの上下marginも消しておく */
+  line-height: 1.2;
 }
+
+
 
 
 /* 検索ボックスとボタンを投稿フォームの幅に揃える */
@@ -161,13 +167,10 @@ form button:hover {
   white-space: nowrap;
 }
 
-
 #searchBtn:hover,
 #clearBtn:hover {
   background-color: #c49b72;
 }
-
-
 
 /* タグ表示 */
 .tag {
@@ -280,23 +283,20 @@ form button:hover {
 
 
 /* コメントタイトル */
-.comment-section h4 {
-  margin: 0 0 8px 0;
-  font-size: 16px;
-  color: #5c3d1c;
+.comment-section {
+  margin-top: 20px;
+  padding: 16px;
+  background-color: #fffaf0;
+  border-radius: 10px;
+  box-sizing: border-box;
+  width: 100%; /* ← diary-entryに合わせて最大幅に */
 }
 
-/* コメント入力欄（枠を細く＆角丸） */
-#comment-input {
-  width: 100%;
-  padding: 10px;
-  font-size: 15px;
-  border: 1.5px solid #a27c52;  /* 細め＆茶系 */
-  border-radius: 10px;
-  background-color: #ffffff;
-  resize: none;
+.comment-name-input,
+.comment-textarea,
+.comment-submit-btn {
+  width: 100%; /* ← 全部の入力欄＆ボタンを幅100%で統一 */
   box-sizing: border-box;
-  font-family: 'Kosugi Maru', 'Zen Maru Gothic', sans-serif;
 }
 
 /* コメント送信ボタン（やさしいレトロ調） */
@@ -314,5 +314,44 @@ form button:hover {
 }
 
 #comment-submit:hover {
+  background-color: #c49b72;
+}
+.comment-name-input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1.5px solid #a27c52;
+  border-radius: 10px;
+  background-color: #ffffff;
+  font-size: 15px;
+  font-family: 'Kosugi Maru', 'Zen Maru Gothic', sans-serif;
+}
+
+.comment-textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  font-size: 15px;
+  border: 1.5px solid #a27c52;
+  border-radius: 10px;
+  background-color: #ffffff;
+  resize: none;
+  font-family: 'Kosugi Maru', 'Zen Maru Gothic', sans-serif;
+}
+
+.comment-submit-btn {
+  margin-top: 8px;
+  padding: 8px 14px;
+  font-size: 14px;
+  background-color: #d2b48c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Kosugi Maru', 'Zen Maru Gothic', sans-serif;
+  transition: background-color 0.3s;
+}
+
+.comment-submit-btn:hover {
   background-color: #c49b72;
 }
