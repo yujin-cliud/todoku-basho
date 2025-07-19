@@ -134,38 +134,40 @@ form button:hover {
 }
 
 
-/* 検索 */
+/* 検索ボックスとボタンを投稿フォームの幅に揃える */
 .search-wrapper {
-  max-width: 500px;
+  max-width: 530px;
   margin: 16px auto;
   display: flex;
   gap: 8px;
   justify-content: center;
 }
-
+/* 入力欄（キーワード） */
 #searchInput {
   flex: 1;
-  padding: 10px;
+  padding: 8px;
   font-size: 16px;
   border-radius: 8px;
-  border: 2px solid #888;
+  border: 1px solid #888;
 }
-
+/* 検索・クリアボタン */
 #searchBtn,
 #clearBtn {
-  padding: 10px 16px;
-  font-size: 16px;
-  border: none;
-  border-radius: 8px;
+  padding: 3px 10px;
+  font-size: 14px;
+  border-radius: 10px;
   background-color: #d2b48c;
   color: white;
-  cursor: pointer;
+  white-space: nowrap;
 }
+
 
 #searchBtn:hover,
 #clearBtn:hover {
   background-color: #c49b72;
 }
+
+
 
 /* タグ表示 */
 .tag {
@@ -271,10 +273,11 @@ form button:hover {
 .comment-section {
   margin-top: 20px;
   padding: 12px;
-  border-top: 2px dashed #ccc;
   background-color: #fffaf0;
   border-radius: 10px;
+  /* border-top: 2px dashed #ccc; ← これ削除 */
 }
+
 
 /* コメントタイトル */
 .comment-section h4 {
