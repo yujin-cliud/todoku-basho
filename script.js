@@ -10,16 +10,37 @@ document.getElementById('diary-form').addEventListener("submit", async (e) => {
   const content = document.getElementById('content').value.trim();
   const tagsInput = document.getElementById('tags');
   const tags = tagsInput.value.split(',').map(tag => tag.trim()).filter(tag => tag !== "");
+  const imageFile = document.getElementById('imageInput').files[0];
+  const uid = window.currentUser?.uid || null;
 
   if (!title || !content) {
     alert("タイトルと本文を入力してな！");
     return;
   }
 
-  const date = new Date().toISOString();
-  const uid = window.currentUser?.uid || null;
+  let imageUrl = "";
 
-  const newEntry = { name, title, content, tags, date, likes: 0, uid };
+  if (imageFile) {
+    const formData = new FormData();
+    formData.append("file", imageFile);
+    formData.append("upload_preset", "todoku_upload");
+
+    try {
+      const res = await fetch("https://api.cloudinary.com/v1_1/dvzapaede/image/upload", {
+        method: "POST",
+        body: formData
+      });
+      const data = await res.json();
+      imageUrl = data.secure_url;
+    } catch (err) {
+      console.error("画像アップロード失敗:", err);
+      alert("画像のアップロードに失敗したで…");
+      return;
+    }
+  }
+
+  const date = new Date().toISOString();
+  const newEntry = { name, title, content, tags, date, likes: 0, uid, imageUrl };
 
   try {
     await window.addDoc(window.collection(window.db, "diaries"), newEntry);
@@ -34,6 +55,7 @@ document.getElementById('diary-form').addEventListener("submit", async (e) => {
   document.getElementById('diary-form').reset();
   autoGrow(document.getElementById("content"));
 });
+
 
 async function loadEntries() {
   diaryData = [];
@@ -68,6 +90,7 @@ function displayEntry() {
     <div class="entry">
       <h3>${entry.title}</h3>
       <p>${entry.content}</p>
+      ${entry.imageUrl ? `<img src="${entry.imageUrl}" alt="投稿画像" class="diary-image" />` : ""}
       <small>by ${entry.name} ｜ ${formatDate(entry.date)}</small><br />
       <p class="tags">タグ:
         ${(entry.tags || []).map(tag => `<span class="tag" data-tag="${tag}">#${tag}</span>`).join(" ")}
