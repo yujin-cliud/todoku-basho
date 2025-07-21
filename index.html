@@ -50,6 +50,19 @@
 
 </head>
 <body>
+<!-- 編集モーダル -->
+<div id="editModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <h3>投稿の編集</h3>
+    <input type="text" id="editTitle" placeholder="タイトル" />
+    <textarea id="editContent" placeholder="本文" rows="4"></textarea>
+    <input type="text" id="editTags" placeholder="タグ（カンマ区切り）" />
+    <div class="modal-buttons">
+      <button id="saveEditBtn">保存</button>
+      <button id="cancelEditBtn">キャンセル</button>
+    </div>
+  </div>
+</div>
   <!-- スプラッシュ画面（最初にロゴだけを出す箱） -->
 <div id="splash-screen">
   <img src="symbol.png" alt="届く場所ロゴ" class="splash-logo" />
