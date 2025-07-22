@@ -115,8 +115,10 @@ function displayEntry() {
     ${entry.imageUrl ? `<img src="${entry.imageUrl}" class="diary-image">` : ""}
     <small>by ${entry.name} ｜ ${formatDate(entry.date)}</small><br/>
     <p class="tags">
-      タグ: ${(entry.tags || []).map(tag => `<span class="tag" data-tag="${tag}">#${tag}</span>`).join(" ")}
-    </p>
+  タグ: ${(entry.tags || []).map(tag => `<span class="tag" data-tag="${tag}">#${tag}</span>`).join(" ")}
+  <img src="./image/comment.png" alt="コメント" class="menu-icon comment-icon" data-id="${entry.id}" style="width: 24px; height: 24px; margin-left: 8px; cursor: pointer;" />
+</p>
+
     <button class="likeBtn" data-id="${entry.id}" ${alreadyLiked ? "disabled" : ""}>
       ${alreadyLiked ? "💛 お気に入り済み" : "💛 お気に入り"}
     </button>
@@ -151,32 +153,31 @@ function displayEntry() {
 }
 
 
-  // コメント欄
-  const commentBox = document.createElement("div");
-  commentBox.className = "comment-section";
-  commentBox.innerHTML = `
-    <h4>コメント</h4>
-    <div id="comment-list"></div>
-    <input type="text" id="comment-name" placeholder="お名前（省略可）" class="comment-name-input" />
-    <textarea id="comment-input" rows="2" class="comment-textarea" placeholder="コメントを書く…"></textarea>
-    <button id="comment-submit" class="comment-submit-btn">コメント送信</button>
-  `;
-  container.appendChild(commentBox);
-
-  document.getElementById("comment-submit").addEventListener("click", async () => {
-    const name = document.getElementById("comment-name").value.trim() || "匿名さん";
-    const text = document.getElementById("comment-input").value.trim();
-    if (!text) return alert("コメントを入力してな");
-
-    const comment = { name, text, date: new Date().toISOString() };
-    const ref = window.collection(window.db, "diaries", entry.id, "comments");
-    await window.addDoc(ref, comment);
-    document.getElementById("comment-input").value = "";
-    document.getElementById("comment-name").value = "";
-    loadComments(entry.id);
+// コメントアイコンのイベント追加（HTML側のアイコンを利用）
+const commentIcon = entryHTML.querySelector(".comment-icon");
+if (commentIcon) {
+  commentIcon.addEventListener("click", () => {
+    openCommentModal(entry.id);
   });
+}
 
-  loadComments(entry.id);
+// コメント件数の表示用span作成
+const commentCountSpan = document.createElement("span");
+commentCountSpan.className = "comment-count";
+commentCountSpan.textContent = "..."; // 読み込み中の仮表示
+
+// Firestoreから件数取得して更新
+const commentRef = window.collection(window.db, "diaries", entry.id, "comments");
+window.getDocs(commentRef).then(snap => {
+  commentCountSpan.textContent = snap.size;
+});
+
+// .tags に件数だけ追加（アイコンは既存のHTMLのを使う）
+const tagsContainer = entryHTML.querySelector(".tags");
+if (tagsContainer) {
+  tagsContainer.appendChild(commentCountSpan);
+}
+
   displayThumbnails();
 }
 
@@ -334,3 +335,78 @@ document.getElementById("cancelEditBtn").addEventListener("click", () => {
 document.getElementById("saveEditBtn").disabled = true;
 // 保存処理…
 document.getElementById("saveEditBtn").disabled = false;
+// コメントモーダルを開く関数
+function openCommentModal(postId) {
+  const modal = document.getElementById("comment-modal");
+  modal.style.display = "block";
+  modal.dataset.postId = postId; // 投稿IDを保持（送信時に使う）
+  // ⬇ ここが追加やで！
+  loadComments(postId);
+}
+// 「×」ボタンでモーダルを閉じる
+document.getElementById("close-comment-modal").addEventListener("click", () => {
+  document.getElementById("comment-modal").style.display = "none";
+});
+document.getElementById("comment-submit").addEventListener("click", async () => {
+  const name = document.getElementById("comment-name").value.trim() || "匿名さん";
+  const text = document.getElementById("comment-text").value.trim();
+  const postId = document.getElementById("comment-modal").dataset.postId;
+
+  if (!text) {
+    alert("コメントを入力してな！");
+    return;
+  }
+
+  const comment = {
+    name,
+    text,
+    date: new Date().toISOString(),
+  };
+
+  try {
+    const ref = window.collection(window.db, "diaries", postId, "comments");
+    await window.addDoc(ref, comment);
+
+    // コメント表示を更新
+    await loadComments(postId);
+
+    // フォームリセット＆モーダル閉じる
+    document.getElementById("comment-name").value = "";
+    document.getElementById("comment-text").value = "";
+    document.getElementById("comment-modal").style.display = "none";
+
+  } catch (err) {
+    console.error("コメント保存エラー：", err);
+    alert("コメントの保存に失敗したで…");
+  }
+});
+// 左メニュー開閉処理
+document.getElementById("menuToggle").addEventListener("click", () => {
+  const menuItems = document.getElementById("menuItems");
+  menuItems.classList.toggle("active");
+});
+// 投稿フォームの開閉トグル
+const formWrapper = document.querySelector(".form-wrapper");
+
+document.getElementById("iconPost").addEventListener("click", () => {
+  const isVisible = window.getComputedStyle(formWrapper).display !== "none";
+  formWrapper.style.display = isVisible ? "none" : "block";
+});
+
+
+// タグ検索欄へスクロール＋フォーカス
+document.getElementById("iconTag").addEventListener("click", () => {
+  const input = document.getElementById("searchInput");
+  input.scrollIntoView({ behavior: "smooth", block: "center" });
+  input.focus();
+});
+
+// お気に入り投稿だけを絞り込み表示
+document.getElementById("iconFavorite").addEventListener("click", () => {
+  filteredData = diaryData.filter(entry => {
+    const likedKey = `liked_${entry.id}`;
+    return localStorage.getItem(likedKey);
+  });
+  currentIndex = 0;
+  displayEntry();
+});
