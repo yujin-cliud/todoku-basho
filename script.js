@@ -381,10 +381,14 @@ document.getElementById("comment-submit").addEventListener("click", async () => 
   }
 });
 // 左メニュー開閉処理
-document.getElementById("menuToggle").addEventListener("click", () => {
-  const menuItems = document.getElementById("menuItems");
-  menuItems.classList.toggle("active");
+document.getElementById('menuToggle').addEventListener('click', function () {
+  const menu = document.getElementById('menuItems');
+  const icon = document.getElementById('menuToggle');
+
+  menu.classList.toggle('active');
+  icon.classList.toggle('flipped'); // ← ここで左右反転！
 });
+
 // 投稿フォームの開閉トグル
 const formWrapper = document.querySelector(".form-wrapper");
 

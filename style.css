@@ -587,7 +587,7 @@ form button:hover {
 /* ===== 左サイドメニュー ===== */
 .side-menu {
   position: fixed;
-  top: 50%;
+  top: 20%;
   left: 0;
   transform: translateY(-50%);
   z-index: 2000;
@@ -624,18 +624,18 @@ form button:hover {
   align-items: center;
   background: rgba(255, 255, 255, 0.9);
   border-radius: 12px;
-  padding: 10px;
+  padding: 1px;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
   width: 60px;
-  transition: left 0.3s ease, opacity 0.3s ease;
+  transition: left 1s ease, opacity 0.3s ease;
   opacity: 0;
   pointer-events: none;
-  gap: 10px;
+  gap: 20px;
   z-index: 2001;
 }
 
 .menu-items.active {
-  left: 45px;                       /* ← スライドイン位置（三角の右） */
+  left: 5px;                       /* ← スライドイン位置（三角の右） */
   opacity: 1;
   pointer-events: auto;
 }
@@ -654,3 +654,7 @@ form button:hover {
   transform: scale(1.1);
 }
 
+#menuToggle.flipped {
+  transform: scaleX(-1); /* 左右反転（右→左） */
+  transition: transform 0.3s ease;
+}
