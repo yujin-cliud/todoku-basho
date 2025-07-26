@@ -111,31 +111,23 @@ form button:hover {
   }
 }
 
-.app-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 12px auto 18px;
-  justify-content: flex-start;
-  max-width: 700px;     /* ← 最大幅だけ決めて中央寄せ */
-  width: 90%;           /* ← 画面に対して相対的な幅 */
-  padding-left: 150px;   /* ← 左にちょっと寄せる */
-}
 
 .header-logo {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   object-fit: contain;
   opacity: 0.95;
+  vertical-align: middle;
+  margin-bottom: 10px;      /* ←ここを削除 or 替える */
 }
+
 .header-title {
   font-family: 'Kosugi Maru', 'Zen Maru Gothic', sans-serif;
-  font-size: 22px;
+  font-size: 25px;
   color: #5c3d1c;
-  font-weight: normal;
-  letter-spacing: 1px;
-  margin: 0; /* ← titleの上下marginも消しておく */
-  line-height: 1.2;
+  margin: 0;
+  line-height: 1;
+  display: inline-block;
 }
 
 
@@ -584,77 +576,42 @@ form button:hover {
   margin-left: 4px;
   vertical-align: middle;
 }
-/* ===== 左サイドメニュー ===== */
-.side-menu {
-  position: fixed;
-  top: 20%;
-  left: 0;
-  transform: translateY(-50%);
-  z-index: 2000;
+.menu-icons {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
 }
 
-/* メニュー開閉の三角ボタン */
-.menu-toggle {
-  width: 36px;
-  height: 36px;
-  margin: 5px;
+.menu-icon {
+  width: 40px;
+  height: 40px;
   cursor: pointer;
   opacity: 0.8;
-  background-color: #ffffff;
-  border: 2px solid #a67c52;
-  border-radius: 10px;
-  padding: 4px;
-  box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
   transition: transform 0.2s ease;
 }
-.menu-toggle:hover {
-  transform: scale(1.1);
-  background-color: #f8f0e5;
-}
 
-
-/* 開いた時に表示されるアイコン列 */
-.menu-items {
-  position: absolute;               /* ← fixedじゃなく absolute に戻す */
-  top: 80px;                        /* ← 三角のすぐ下に出す（調整OK） */
-  left: -120px;                     /* ← 非表示状態の位置 */
-  transform: none;                  /* ← 中央揃えは解除 */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 12px;
-  padding: 1px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-  width: 60px;
-  transition: left 1s ease, opacity 0.3s ease;
-  opacity: 0;
-  pointer-events: none;
-  gap: 20px;
-  z-index: 2001;
-}
-
-.menu-items.active {
-  left: 5px;                       /* ← スライドイン位置（三角の右） */
-  opacity: 1;
-  pointer-events: auto;
-}
-
-
-
-/* メニューアイコン共通スタイル */
-.menu-icon {
-  width: 36px;
-  height: 36px;
-  cursor: pointer;
-  opacity: 0.9;
-  transition: transform 0.2s ease;
-}
 .menu-icon:hover {
   transform: scale(1.1);
+  opacity: 1;
+}
+.app-header {
+  background-color: #fff;
+  padding: 1px 0; /* ← 上下のみ余白、左右はcontainerに任せる */
 }
 
-#menuToggle.flipped {
-  transform: scaleX(-1); /* 左右反転（右→左） */
-  transition: transform 0.3s ease;
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+
+.icon-group {
+  display: flex;
+  gap: 16px; /* ← アイコン間の余白はこれくらいで十分 */
+  margin-left: auto; /* ← タイトルの右にぴったり寄せる */
 }
