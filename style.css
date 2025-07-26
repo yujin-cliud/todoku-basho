@@ -615,7 +615,12 @@ form button:hover {
   background-color: #fff;
   padding: 1px 0; /* ← 上下のみ余白、左右はcontainerに任せる */
 }
-
+.app-title {
+  display: flex;
+  align-items: center;
+  font-size: 1.5em;
+  font-weight: bold;
+}
 .header-container {
   display: flex;
   align-items: center;
