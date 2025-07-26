@@ -450,24 +450,32 @@ form button:hover {
 }
 .modal {
   position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background-color: rgba(0,0,0,0.5);
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4); /* 背景ぼかし */
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 10000;
+  justify-content: center;
+  z-index: 1000;
 }
 
+
 .modal-content {
-  background: #fff8dc;
-  padding: 20px;
-  border: 2px solid #a67c52;
+  background: #fffef5; /* ノート風の背景色 */
   border-radius: 10px;
+  padding: 20px;
   width: 90%;
-  max-width: 500px;
-  text-align: left;
+  max-width: 400px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  position: relative;
+
+  /* 中央に固定する */
+  left: 50%;
+  transform: translateX(-50%);
 }
+
 @keyframes fadeScaleIn {
   from {
     opacity: 0;

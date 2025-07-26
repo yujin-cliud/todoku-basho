@@ -1,3 +1,12 @@
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const auth = getAuth();
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    window.currentUser = user;
+    console.log("ログイン成功：", user.uid);
+  }
+});
 document.addEventListener("DOMContentLoaded", () => {
   let diaryData = [];
   let filteredData = [];
@@ -323,9 +332,71 @@ iconPost.addEventListener("click", () => {
     }
   });
 
-  // 投稿データ読み込み＆表示
+    // ← ★ここより上に 投稿処理のコードを追加！このコメント探してね！
+
+  // 投稿処理
+  document.getElementById("submitBtn")?.addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("username").value.trim() || "匿名さん";
+    const title = document.getElementById("title").value.trim();
+    const content = document.getElementById("content").value.trim();
+    const tags = document.getElementById("tags").value.split(",").map(t => t.trim()).filter(t => t);
+    const imageFile = document.getElementById("imageInput").files[0];
+
+    if (!title || !content) {
+      alert("タイトルと本文は必須やで！");
+      return;
+    }
+
+    const post = {
+      name,
+      title,
+      content,
+      tags,
+      date: new Date().toISOString(),
+      uid: window.currentUser?.uid || null,
+      likes: 0,
+    };
+
+    try {
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append("file", imageFile);
+        formData.append("upload_preset", "todoku_upload");
+
+        const res = await fetch("https://api.cloudinary.com/v1_1/dvzapaede/image/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+        post.imageUrl = data.secure_url;
+      }
+
+      await window.addDoc(window.collection(window.db, "diaries"), post);
+
+      // 入力欄をリセット
+      document.getElementById("username").value = "";
+      document.getElementById("title").value = "";
+      document.getElementById("content").value = "";
+      document.getElementById("tags").value = "";
+      document.getElementById("imageInput").value = "";
+      document.querySelector(".form-wrapper")?.classList.remove("active");
+
+      await loadEntries();
+      displayEntry();
+
+    } catch (err) {
+      console.error("投稿エラー：", err);
+      alert("投稿に失敗したで…");
+    }
+  });
+
+  // 投稿データ読み込み＆表示 ←★この下はもともとあるやつ
   (async () => {
     await loadEntries();
     displayEntry();
   })();
 });
+
