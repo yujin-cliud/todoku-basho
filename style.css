@@ -620,7 +620,7 @@ form button:hover {
   align-items: center;
   font-size: 1.5em;
   font-weight: bold;
-  margin-left: 8px; /* ←★これを追加するだけ！ */
+  margin-left: 0px; /* ←★これを追加するだけ！ */
 }
 .header-container {
   display: flex;
