@@ -134,8 +134,11 @@ form button:hover {
   object-fit: contain;
   opacity: 0.95;
   vertical-align: middle;
-  margin-bottom: 10px;      /* ←ここを削除 or 替える */
+  margin-bottom: 10px;
+  margin-right: 8px;  /* ←★これを追加！ロゴとタイトルの間に8pxの余白 */
+  margin-top: 9px; /* ← ★ここを追加でちょっと下に！ */
 }
+
 
 .header-title {
   font-family: 'Kosugi Maru', 'Zen Maru Gothic', sans-serif;
@@ -370,15 +373,15 @@ form button:hover {
     margin-left: 16px;
     padding-left: 0 !important;  /* ← スマホでは左パディング無効に */
   }
-
-  .header-logo {
-    margin-right: 6px;
-  }
-
   .header-title {
     font-size: 20px;
     text-align: left;
   }
+  .header-logo {
+    margin-right: 6px;
+  }
+
+  
 }
 .diary-image {
   max-width: 100%;
@@ -628,7 +631,7 @@ form button:hover {
   align-items: center;
   font-size: 1.5em;
   font-weight: bold;
-  margin-left: 0px; /* ←★これを追加するだけ！ */
+  margin-left: 1px; /* ←★これを追加するだけ！ */
 }
 .header-container {
   display: flex;
@@ -670,4 +673,15 @@ form button:hover {
 
 .close-btn:hover {
   color: #000;
+}
+@media (max-width: 600px) {
+  .app-header {
+    margin: 0; /* ← 中央寄せを解除 */
+    padding-left: 12px; /* ← 左に少し余白をつけるとバランスが良い */
+    justify-content: flex-start; /* 念のため明示しておく */
+  }
+
+  .header-title {
+    font-size: 20px; /* 小さい画面でも文字サイズが合うように調整（任意） */
+  }
 }
