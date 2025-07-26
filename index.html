@@ -85,6 +85,9 @@
 
 
   <div class="form-wrapper">
+  <div class="form-box">
+    <button class="close-btn" id="closeFormBtn">✕</button> <!-- ← これ追加 -->
+
     <form id="diary-form">
       <input type="text" id="username" placeholder="お名前（省略可）" />
       <input type="text" id="title" placeholder="タイトル" />
@@ -92,9 +95,11 @@
       <input type="text" id="tags" placeholder="タグ（カンマ区切り）" />
       <input type="file" id="imageInput" accept="image/*" />
       <button type="submit" id="submit">投稿する</button>
-      
     </form>
   </div>
+</div>
+
+
 
   <div class="search-wrapper">
     <input type="text" id="searchInput" placeholder="キーワードで検索（タグ・タイトル・本文）" />

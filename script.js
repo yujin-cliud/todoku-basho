@@ -15,7 +15,14 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 1000);
     }, 800);
   }
+document.getElementById("closeFormBtn")?.addEventListener("click", function () {
+    const formWrapper = document.querySelector(".form-wrapper");
+    if (formWrapper) {
+      formWrapper.classList.remove("active"); // ← class制御がおすすめ
+    }
+  });
 
+  // ...他の処理の続き
   // 投稿読み込み・表示
   async function loadEntries() {
     diaryData = [];
@@ -224,10 +231,12 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   const formWrapper = document.querySelector(".form-wrapper");
-  document.getElementById("iconPost")?.addEventListener("click", () => {
-    const isVisible = window.getComputedStyle(formWrapper).display !== "none";
-    formWrapper.style.display = isVisible ? "none" : "block";
-  });
+const iconPost = document.getElementById("iconPost");
+
+iconPost.addEventListener("click", () => {
+  formWrapper.classList.toggle("active");
+});
+
 
   document.getElementById("iconTag")?.addEventListener("click", () => {
     const input = document.getElementById("searchInput");
