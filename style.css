@@ -20,7 +20,12 @@ body {
   pointer-events: none;
   transition: opacity 0.3s ease, transform 0.3s ease;
   z-index: 1000;
-  transform: scale(0.95);
+  transform: scale(1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .form-wrapper.active {
@@ -42,6 +47,10 @@ form textarea {
   box-sizing: border-box;
   resize: none;
   background-color: #ffffff;
+  height: auto;
+  overflow-y: hidden;
+  overflow-x: hidden; /* ← 横スクロールも非表示にする */
+  resize: none;
 }
 
 form button {
@@ -67,7 +76,7 @@ form button:hover {
 .diary-entry {
   max-width: 500px;
   margin: 20px auto;
-  background: url("notepaper.png") no-repeat center top;
+  background: url("image/notepaper.png") no-repeat center top;
   background-size: cover;
   padding: 24px;
   border-radius: 12px;
@@ -108,6 +117,35 @@ form button:hover {
 #deleteBtn:hover {
   background-color: #c9302c;
 }
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  background: white;
+  border: 2px solid #333;
+  border-radius: 50%;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  z-index: 10;
+  padding: 0;
+}
+
+@media (max-width: 600px) {
+  .modal-close {
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+  }
+}
 
 /* スマホ対応 */
 @media (max-width: 600px) {
@@ -129,37 +167,25 @@ form button:hover {
 
 
 .header-logo {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: auto;
   object-fit: contain;
   opacity: 0.95;
   vertical-align: middle;
-  margin-bottom: 10px;
-  margin-right: 8px;  /* ←★これを追加！ロゴとタイトルの間に8pxの余白 */
-  margin-top: 9px; /* ← ★ここを追加でちょっと下に！ */
-}
-
-
-.header-title {
-  font-family: 'Kosugi Maru', 'Zen Maru Gothic', sans-serif;
-  font-size: 25px;
-  color: #5c3d1c;
   margin: 0;
-  line-height: 1;
-  display: inline-block;
 }
-
 
 
 
 /* 検索ボックスとボタンを投稿フォームの幅に揃える */
 .search-wrapper {
-  max-width: 530px;
+  max-width: 540px;  /* ← 530px → 700px に拡張 */
   margin: 16px auto;
   display: flex;
   gap: 8px;
   justify-content: center;
 }
+
 /* 入力欄（キーワード） */
 #searchInput {
   flex: 1;
@@ -324,6 +350,15 @@ form button:hover {
   font-family: 'Kosugi Maru', 'Zen Maru Gothic', sans-serif;
   transition: background-color 0.3s;
 }
+.modal-content {
+  background-color: #fdfbee;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 450px;
+  position: relative; /* ← ×ボタンを右上に配置するために必要 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
 
 #comment-submit:hover {
   background-color: #c49b72;
@@ -343,12 +378,13 @@ form button:hover {
   width: 100%;
   padding: 10px;
   margin-top: 10px;
-  font-size: 15px;
   border: 1.5px solid #a27c52;
   border-radius: 10px;
   background-color: #ffffff;
-  resize: none;
+  font-size: 15px;
   font-family: 'Kosugi Maru', 'Zen Maru Gothic', sans-serif;
+  resize: none;
+  overflow: hidden; /* ← これ追加！ */
 }
 
 .comment-submit-btn {
@@ -367,6 +403,34 @@ form button:hover {
 .comment-submit-btn:hover {
   background-color: #c49b72;
 }
+/* コメントモーダルの「×」ボタン位置調整 */
+.close-button {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 40px;
+  height: 40px;
+  background-color: #fff;
+  border: 2px solid #ccc;
+  border-radius: 50%; /* ← ここで正円指定 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  line-height: 1; /* ← 追加して中央揃えを安定させる */
+  padding: 0;      /* ← 余計な高さを防ぐために追加 */
+  box-sizing: border-box; /* ← borderの分を含める */
+  cursor: pointer;
+}
+
+@media (max-width: 400px) {
+  .modal-content {
+    width: 95%;
+    max-width: none;
+  }
+}
+
+
 @media (max-width: 600px) {
   .app-header {
     justify-content: flex-start !important;
@@ -452,47 +516,36 @@ form button:hover {
   background-color: #c49b72;
 }
 .modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.4); /* 背景ぼかし */
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 1000;
+  align-items: center;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
 }
-
-
+.modal.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
 .modal-content {
-  background: #fffef5; /* ノート風の背景色 */
-  border-radius: 10px;
-  padding: 20px;
   width: 90%;
   max-width: 400px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  position: relative;
-
-  /* 中央に固定する */
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-@keyframes fadeScaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.modal-content {
+  background-color: #fffef5;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   animation: fadeScaleIn 0.3s ease;
 }
+
+
 .modal-content input,
 .modal-content textarea {
   width: 100%;
@@ -517,7 +570,16 @@ form button:hover {
   font-size: 14px;
   cursor: pointer;
 }
-
+@keyframes fadeScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
 #saveEditBtn {
   background-color: #4caf50;
   color: white;
@@ -553,29 +615,6 @@ form button:hover {
 .edit-btn:hover {
   background-color: #907b7b;  /* hover時に少し濃く */
 }
-.modal {
-  display: none;
-  position: fixed !important;  /* ←ここポイント！ */
-  z-index: 1000 !important;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
-  background-color: #fff;
-  padding: 20px;
-  margin: 10% auto;
-  width: 90%;
-  max-width: 400px;
-  border-radius: 15px;
-  font-family: inherit;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  position: relative;
-}
-
 .close-button {
   position: absolute;
   top: 10px;
@@ -684,4 +723,69 @@ form button:hover {
   .header-title {
     font-size: 20px; /* 小さい画面でも文字サイズが合うように調整（任意） */
   }
+}
+/* ヘッダーの基本レイアウト（再確認用の最小指定） */
+.app-header {
+  background-color: #fff;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  max-width: 540px;   /* ← 540px → 700px に拡張（フレーム幅に統一） */
+  margin: 0 auto;     /* 中央寄せ */
+}
+
+
+.header-logo {
+  width: 100px;         /* 大きさは少し大きめ */
+  height: auto;
+  margin: 0;           /* 上下の余白を削除 */
+  display: block;
+}
+/* 投稿の by 行（小さな丸アイコン＋テキスト） */
+.byline{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin:6px 0;
+}
+.byline .avatar{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  object-fit:cover;
+}
+.icon-selector {
+  margin-top: 10px;
+}
+.icon-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.profile-icon {
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: border 0.2s;
+}
+.profile-icon.selected {
+  border-color: #333;
+}
+
+/* ▼ 投稿カード内のボタン配置修正 */
+.entry-actions {
+  margin-top: 8px;        /* by行との間隔 */
+  display: flex;          /* 横並び（縦並びにしたいなら column に） */
+  gap: 8px;               /* 2つのボタンの間隔 */
+  align-items: center;
+}
+
+.entry-actions button {
+  width: auto; /* ボタンサイズは内容に合わせる */
 }

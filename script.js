@@ -1,18 +1,76 @@
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc,
+  getDoc, setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const auth = getAuth();
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    window.currentUser = user;
-    console.log("ログイン成功：", user.uid);
-  }
-});
+
 document.addEventListener("DOMContentLoaded", () => {
   let diaryData = [];
   let filteredData = [];
   let currentIndex = 0;
   let editingEntryId = null;
+  let editingEntryUid = null; // ←追加：編集対象の投稿者UIDを保持
+  // --- プロフィール取得キャッシュ（uid → {iconUrl}） ---
+const profileCache = new Map();
 
+async function getProfile(uid){
+  if(!uid) return {};
+  if(profileCache.has(uid)) return profileCache.get(uid);
+  try{
+    const ref = window.doc(window.db, "profiles", uid);
+    const snap = await getDoc(ref);
+    const data = snap.exists() ? snap.data() : {};
+    profileCache.set(uid, data);
+    return data;
+  }catch(e){
+    console.warn("profile load error", e);
+    return {};
+  }
+}
+
+async function saveProfile(uid, iconUrl){
+  const ref = window.doc(window.db, "profiles", uid);
+  await setDoc(ref, { iconUrl }, { merge: true });
+  profileCache.set(uid, { iconUrl });
+}
+
+let selectedIcon = null;
+
+// 初期：プロフィールがあれば選択状態に反映
+(async ()=>{
+  const uid = window.currentUser?.uid;
+  const prof = await getProfile(uid);
+  if (prof?.iconUrl) {
+    selectedIcon = prof.iconUrl;
+    document.querySelectorAll(".profile-icon").forEach(i=>{
+      if (i.dataset.icon === selectedIcon) i.classList.add("selected");
+    });
+  }
+})();
+
+// クリック：選択＆即保存 → 表示更新
+document.querySelectorAll(".profile-icon").forEach(icon => {
+  icon.addEventListener("click", async () => {
+    document.querySelectorAll(".profile-icon").forEach(i => i.classList.remove("selected"));
+    icon.classList.add("selected");
+    selectedIcon = icon.dataset.icon;
+
+    const uid = window.currentUser?.uid;
+    if (!uid) { alert("ログイン中です。数秒後にお試しください。"); return; }
+
+    try{
+      await saveProfile(uid, selectedIcon);
+      // 最新表示にも反映
+      displayEntry();
+    }catch(e){
+      console.error(e);
+      alert("アイコンの保存に失敗しました。通信環境をご確認ください。");
+    }
+  });
+});
+
+
+  
   // スプラッシュ非表示処理（ふわっと消す）
   const splash = document.getElementById("splash-screen");
   if (splash) {
@@ -96,45 +154,68 @@ document.getElementById("closeFormBtn")?.addEventListener("click", function () {
     const entryHTML = document.createElement("div");
     entryHTML.className = "entry";
     entryHTML.innerHTML = `
-      <h3>${entry.title}</h3>
-      ${entry.imageUrl ? `<img src="${entry.imageUrl}" class="diary-image">` : ""}
-      <small>by ${entry.name} ｜ ${formatDate(entry.date)}</small><br/>
-      <p class="tags">
-        タグ: ${(entry.tags || []).map(tag => `<span class="tag" data-tag="${tag}">#${tag}</span>`).join(" ")}
-        <img src="./image/comment.svg" alt="コメント" class="menu-icon comment-icon" data-id="${entry.id}" style="width: 24px; height: 24px; margin-left: 8px; cursor: pointer;" />
-      </p>
-      <button class="likeBtn" data-id="${entry.id}" ${alreadyLiked ? "disabled" : ""}>
-        ${alreadyLiked ? "💛 お気に入り済み" : "💛 お気に入り"}
-      </button>
-      <span class="likeCount">${entry.likes || 0}件のお気に入り</span><br/>
-    `;
+  <h3>${entry.title}</h3>
+  ${entry.imageUrl ? `<img src="${entry.imageUrl}" class="diary-image">` : ""}
+`;
+
+// ▼ by行（アイコン＋テキスト）
+const byline = document.createElement("div");
+byline.className = "byline";
+
+const avatarImg = document.createElement("img");
+avatarImg.className = "avatar";
+avatarImg.alt = "avatar";
+// 未設定時のフォールバック（任意の1枚にしてOK）
+avatarImg.src = "image/avatars/プロフィール-01.svg";
+
+const byText = document.createElement("small");
+byText.innerHTML = `by ${entry.name} ｜ ${formatDate(entry.date)}`;
+
+byline.appendChild(avatarImg);
+byline.appendChild(byText);
+entryHTML.appendChild(byline);
+
+// プロフィールからアイコン差し替え
+(async ()=>{
+  const prof = await getProfile(entry.uid);
+  if (prof?.iconUrl) avatarImg.src = prof.iconUrl;
+})();
+
 
     const expandable = createExpandableContent(entry.content);
-    entryHTML.insertBefore(expandable, entryHTML.querySelector("img, small, .tags"));
-
+    (entryHTML.querySelector("h3") || entryHTML).insertAdjacentElement("afterend", expandable);
     container.appendChild(entryHTML);
 
     if (isOwner) {
-      const deleteBtn = document.createElement("button");
-      deleteBtn.textContent = "この投稿を削除";
-      deleteBtn.className = "delete-btn";
-      deleteBtn.addEventListener("click", async () => {
-        const ok = confirm("この投稿を削除する？");
-        if (!ok) return;
-        await window.deleteDoc(window.doc(window.db, "diaries", entry.id));
-        await loadEntries();
-        displayEntry();
-      });
-      entryHTML.appendChild(deleteBtn);
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "この投稿を削除";
+  deleteBtn.className = "delete-btn";
+  deleteBtn.addEventListener("click", async () => {
+    const ok = confirm("この投稿を削除する？");
+    if (!ok) return;
+    await window.deleteDoc(window.doc(window.db, "diaries", entry.id));
+    await loadEntries();
+    displayEntry();
+  });
 
-      const editBtn = document.createElement("button");
-      editBtn.textContent = "編集";
-      editBtn.className = "edit-btn";
-      editBtn.addEventListener("click", () => {
-        openEditModal(entry);
-      });
-      entryHTML.appendChild(editBtn);
-    }
+  const editBtn = document.createElement("button");
+  editBtn.textContent = "編集";
+  editBtn.className = "edit-btn";
+  editBtn.addEventListener("click", () => {
+    openEditModal(entry);
+  });
+
+  // ▼ by行の“直下”にボタン行を差し込む
+  const actions = document.createElement("div");
+  actions.className = "entry-actions";
+  actions.appendChild(deleteBtn);
+  actions.appendChild(editBtn);
+
+  // ▼ 投稿カードの末尾にボタンを追加
+entryHTML.appendChild(actions);
+
+}
+
 
     const commentIcon = entryHTML.querySelector(".comment-icon");
     if (commentIcon) {
@@ -263,37 +344,69 @@ iconPost.addEventListener("click", () => {
   });
 
   // 編集モーダル
-  function openEditModal(entry) {
-    editingEntryId = entry.id;
-    document.getElementById("editTitle").value = entry.title;
-    document.getElementById("editContent").value = entry.content;
-    document.getElementById("editTags").value = entry.tags?.join(", ") || "";
-    document.getElementById("editModal").style.display = "flex";
-  }
+function openEditModal(entry) {
+  editingEntryId  = entry.id;
+  editingEntryUid = entry.uid || null;
 
-  function closeEditModal() {
-    editingEntryId = null;
-    document.getElementById("editModal").style.display = "none";
-  }
+  document.getElementById("editTitle").value    = entry.title   || "";
+  document.getElementById("editContent").value  = entry.content || "";
+  document.getElementById("editTags").value     = Array.isArray(entry.tags) ? entry.tags.join(", ") : (entry.tags || "");
+  document.getElementById("editImageUrl").value = entry.imageUrl || ""; // ←追加
+
+  document.getElementById("editModal").classList.add("active");
+}
+
+
+
+function closeEditModal() {
+  editingEntryId = null;
+  editingEntryUid = null; // ←追加
+  document.getElementById("editModal").classList.remove("active");
+}
+
+
 
   document.getElementById("saveEditBtn")?.addEventListener("click", async () => {
-    const updatedTitle = document.getElementById("editTitle").value;
-    const updatedContent = document.getElementById("editContent").value;
-    const updatedTags = document.getElementById("editTags").value.split(',').map(t => t.trim());
+  try {
+    const updatedTitle   = document.getElementById("editTitle").value.trim();
+    const updatedContent = document.getElementById("editContent").value.trim();
+    const updatedTagsRaw = document.getElementById("editTags").value;
+    const updatedImageUrl = document.getElementById("editImageUrl").value.trim();
+
 
     if (!editingEntryId) return;
 
+    // 1) 本人チェック（保存前に必ず確認）
+    if (!window.currentUser || !editingEntryUid || window.currentUser.uid !== editingEntryUid) {
+      alert("この投稿を編集する権限がありません。");
+      return;
+    }
+
+    // 2) タグは配列に正規化（空要素は除外）
+    const updatedTags = updatedTagsRaw
+      .split(",")
+      .map(t => t.trim())
+      .filter(Boolean);
+
+    // 3) Firestore 更新
     const entryRef = window.doc(window.db, "diaries", editingEntryId);
     await window.updateDoc(entryRef, {
       title: updatedTitle,
       content: updatedContent,
-      tags: updatedTags
+      tags: updatedTags,
+      imageUrl: updatedImageUrl
     });
 
+    // 4) UI更新（リロードなし）
     closeEditModal();
     await loadEntries();
     displayEntry();
-  });
+  } catch (err) {
+    console.error("編集の保存に失敗しました:", err);
+    alert("保存中にエラーが発生しました。");
+  }
+});
+
 
   document.getElementById("cancelEditBtn")?.addEventListener("click", () => {
     closeEditModal();
@@ -301,15 +414,23 @@ iconPost.addEventListener("click", () => {
 
   // コメントモーダル
   function openCommentModal(postId) {
-    const modal = document.getElementById("comment-modal");
-    modal.style.display = "block";
-    modal.dataset.postId = postId;
-    loadComments(postId);
-  }
+  const modal = document.getElementById("comment-modal");
+  modal.classList.add("active"); // ← ここだけ変更
+  modal.dataset.postId = postId;
+  loadComments(postId);
+}
 
-  document.getElementById("close-comment-modal")?.addEventListener("click", () => {
-    document.getElementById("comment-modal").style.display = "none";
-  });
+document.getElementById("close-comment-modal")?.addEventListener("click", () => {
+  document.getElementById("comment-modal").classList.remove("active"); // ← ここも変更
+});
+document.getElementById("comment-cancel")?.addEventListener("click", () => {
+  document.getElementById("comment-modal").classList.remove("active");
+});
+
+document.getElementById("comment-text")?.addEventListener("input", function () {
+  this.style.height = "auto";
+  this.style.height = this.scrollHeight + "px";
+});
 
   document.getElementById("comment-submit")?.addEventListener("click", async () => {
     const name = document.getElementById("comment-name").value.trim() || "匿名さん";
@@ -399,4 +520,54 @@ iconPost.addEventListener("click", () => {
     displayEntry();
   })();
 });
+// 📌 本文欄の高さ自動調整
+const contentTextarea = document.getElementById("content");
 
+contentTextarea.addEventListener("input", () => {
+  contentTextarea.style.height = "auto"; // 一度リセット
+  contentTextarea.style.height = contentTextarea.scrollHeight + "px"; // 内容に合わせて高さ調整
+});
+
+
+/***** 画像アップロード（Cloudinary unsigned） *****/
+const CLOUD_NAME   = "dvzapaede";
+const UPLOAD_PRESET= "todoku_upload";
+
+const pickImageBtn  = document.getElementById("pickImageBtn");
+const editImageFile = document.getElementById("editImageFile");
+const editImageUrl  = document.getElementById("editImageUrl");
+const uploadHint    = document.getElementById("uploadHint");
+
+pickImageBtn?.addEventListener("click", () => {
+  editImageFile?.click();
+});
+
+editImageFile?.addEventListener("change", async (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+
+  try {
+    uploadHint && (uploadHint.textContent = "アップロード中…");
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET);
+
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, {
+      method: "POST",
+      body: formData
+    });
+    if (!res.ok) throw new Error("Cloudinary upload failed");
+    const json = await res.json();
+
+    // 取得したURLを入力欄に反映
+    if (editImageUrl) editImageUrl.value = json.secure_url || json.url || "";
+    uploadHint && (uploadHint.textContent = "アップロード完了！");
+  } catch (err) {
+    console.error(err);
+    uploadHint && (uploadHint.textContent = "アップロード失敗。もう一度お試しください。");
+    alert("画像のアップロードに失敗しました。通信状況をご確認ください。");
+  } finally {
+    // 選択状態はクリアしておく
+    if (editImageFile) editImageFile.value = "";
+  }
+});
