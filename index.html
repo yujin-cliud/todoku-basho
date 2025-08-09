@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -31,7 +32,7 @@
   window.deleteDoc = deleteDoc;
   window.doc = doc;
   window.updateDoc = updateDoc;
-
+ 
   const auth = getAuth(app);
   signInAnonymously(auth)
     .then(() => {
@@ -57,12 +58,23 @@
 </head>
 <body>
 <!-- 編集モーダル -->
-<div id="editModal" class="modal" style="display: none;">
+<div id="editModal" class="modal">
   <div class="modal-content">
     <h3>投稿の編集</h3>
     <input type="text" id="editTitle" placeholder="タイトル" />
     <textarea id="editContent" placeholder="本文" rows="4"></textarea>
     <input type="text" id="editTags" placeholder="タグ（カンマ区切り）" />
+    <!-- 画像URL（Cloudinary） -->
+<label for="editImageUrl">画像URL</label>
+<input type="url" id="editImageUrl" placeholder="https://res.cloudinary.com/..." />
+
+<!-- 画像アップロード（Cloudinary unsigned） -->
+<div class="image-upload-row">
+  <input type="file" id="editImageFile" accept="image/*" style="display:none;">
+  <button type="button" id="pickImageBtn" class="btn-secondary">画像を選ぶ</button>
+  <small id="uploadHint" class="hint">選択後に自動アップロードされます</small>
+</div>
+
     <div class="modal-buttons">
       <button id="saveEditBtn">保存</button>
       <button id="cancelEditBtn">キャンセル</button>
@@ -70,32 +82,42 @@
   </div>
 </div>
   <!-- スプラッシュ画面（最初にロゴだけを出す箱） -->
+<!-- スプラッシュ -->
 <div id="splash-screen">
-  <img src="symbol.png" alt="届く場所ロゴ" class="splash-logo" />
+  <img src="image/logo.svg" alt="Lumina" class="splash-logo" />
 </div>
-<header class="app-header">
+
+  <header class="app-header">
   <div class="header-container">
-    <div class="app-title">
-      <img src="symbol.png" alt="届く場所ロゴ" class="header-logo" />
-      <h1 class="header-title">届く場所</h1>
-    </div>
-    <div class="menu-icons">
+    <!-- ロゴだけ（新しいアプリ名に合わせて alt を変更） -->
+    <img src="image/logo.svg" alt="Lumina" class="header-logo" />
+
+    <!-- 右側アイコン群（クラス名はCSSに合わせて .icon-group を使用） -->
+    <div class="icon-group">
       <img src="image/icon_post.svg" class="menu-icon" id="iconPost" alt="投稿" />
       <img src="image/icon_tag.svg" class="menu-icon" id="iconTag" alt="タグ検索" />
       <img src="image/icon_favorite.svg" class="menu-icon" id="iconFavorite" alt="お気に入り" />
     </div>
   </div>
 </header>
-
-</div>
-
-
   <div class="form-wrapper">
   <div class="form-box">
-    <button class="close-btn" id="closeFormBtn">✕</button> <!-- ← これ追加 -->
-
+    <button id="closeFormBtn" class="modal-close">×</button>
     <form id="diary-form">
       <input type="text" id="username" placeholder="お名前（省略可）" />
+      <div class="icon-selector">
+  <label>アイコンを選択：</label>
+  <div class="icon-options">
+    <img src="image/avatars/プロフィール-01.svg" class="profile-icon" data-icon="image/avatars/プロフィール-01.svg" alt="icon1">
+    <img src="image/avatars/プロフィール-02.svg" class="profile-icon" data-icon="image/avatars/プロフィール-02.svg" alt="icon2">
+    <img src="image/avatars/プロフィール-03.svg" class="profile-icon" data-icon="image/avatars/プロフィール-03.svg" alt="icon3">
+    <img src="image/avatars/プロフィール-04.svg" class="profile-icon" data-icon="image/avatars/プロフィール-04.svg" alt="icon4">
+    <img src="image/avatars/プロフィール-05.svg" class="profile-icon" data-icon="image/avatars/プロフィール-05.svg" alt="icon5">
+    <img src="image/avatars/プロフィール-06.svg" class="profile-icon" data-icon="image/avatars/プロフィール-06.svg" alt="icon6">
+
+  </div>
+</div>
+
       <input type="text" id="title" placeholder="タイトル" />
       <textarea id="content" placeholder="ここに日記を書く…" rows="3"></textarea>
       <input type="text" id="tags" placeholder="タグ（カンマ区切り）" />
@@ -123,17 +145,20 @@
 
   <script type="module" src="script.js"></script>
 <!-- コメントモーダル（これだけ残す！） -->
+<!-- コメントモーダル（修正後） -->
 <div id="comment-modal" class="modal">
   <div class="modal-content">
     <span id="close-comment-modal" class="close-button">&times;</span>
     <h3>コメントを投稿する</h3>
     <input type="text" id="comment-name" placeholder="名前（省略可）" />
-    <textarea id="comment-text" placeholder="コメントを入力..." rows="4"></textarea>
-    <button id="comment-submit">送信</button>
-
-    <!-- ⬇ ここがコメント一覧の表示場所！ -->
+    <textarea id="comment-text" class="comment-textarea" placeholder="コメントを入力..." rows="4"></textarea>
+    <div class="modal-buttons">
+      <button id="comment-submit">送信</button>
+      <button id="comment-cancel">キャンセル</button> <!-- ← 追加！ -->
+    </div>
     <div id="comment-list" style="margin-top: 15px;"></div>
   </div>
 </div>
+
 </body>
 </html>
