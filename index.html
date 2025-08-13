@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>届く場所</title>
+  <title>Lumina</title>
   <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Zen+Maru+Gothic&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 
@@ -71,13 +71,13 @@
 <!-- 画像アップロード（Cloudinary unsigned） -->
 <div class="image-upload-row">
   <input type="file" id="editImageFile" accept="image/*" style="display:none;">
-  <button type="button" id="pickImageBtn" class="btn-secondary">画像を選ぶ</button>
+  <button type="button" id="pickImageBtn" class="btn-paper is-ghost">画像を選ぶ</button>
   <small id="uploadHint" class="hint">選択後に自動アップロードされます</small>
 </div>
 
     <div class="modal-buttons">
-      <button id="saveEditBtn">保存</button>
-      <button id="cancelEditBtn">キャンセル</button>
+      <button id="saveEditBtn" class="btn-paper is-primary">保存</button>
+      <button id="cancelEditBtn" class="btn-paper is-ghost">キャンセル</button>
     </div>
   </div>
 </div>
@@ -122,8 +122,8 @@
       <textarea id="content" placeholder="ここに日記を書く…" rows="3"></textarea>
       <input type="text" id="tags" placeholder="タグ（カンマ区切り）" />
       <input type="file" id="imageInput" accept="image/*" />
-      <button type="button" id="submitBtn">投稿する</button>
-
+      <button type="button" id="submitBtn" class="btn-paper is-primary">投稿する</button>
+      <button type="button" id="cancelBtn" class="btn-paper is-ghost">キャンセル</button>
     </form>
   </div>
 </div>
@@ -132,16 +132,24 @@
 
   <div class="search-wrapper">
     <input type="text" id="searchInput" placeholder="キーワードで検索（タグ・タイトル・本文）" />
-    <button id="searchBtn">検索</button>
-    <button id="clearBtn">クリア</button>
+    <button id="searchBtn" class="btn-paper is-ghost">検索</button>
+    <button id="clearBtn" class="btn-paper is-ghost">クリア</button>
   </div>
 
   <div id="diary-container" class="diary-entry"></div>
+<!-- ▼ サムネ横スクロール帯（サムネはここへ描画） -->
+<section id="lumina-thumb-strip" aria-label="サムネ">
+  <div class="thumbnail-bar" id="lumina-thumb-track" data-autoslide="true"></div>
+</section>
+
+<!-- ▼ 過去投稿（縦リストでここに並べる） -->
+<section id="lumina-past-grid" aria-label="過去投稿一覧"></section>
 
   <div class="nav-buttons">
-    <button id="prevBtn">◀ 前へ</button>
-    <button id="nextBtn">次へ ▶</button>
-  </div>
+  <button type="button" id="prevBtn" class="btn-paper is-ghost">◀ 前へ</button>
+  <button type="button" id="nextBtn" class="btn-paper is-ghost">次へ ▶</button>
+</div>
+
 
   <script type="module" src="script.js"></script>
 <!-- コメントモーダル（これだけ残す！） -->
@@ -153,8 +161,10 @@
     <input type="text" id="comment-name" placeholder="名前（省略可）" />
     <textarea id="comment-text" class="comment-textarea" placeholder="コメントを入力..." rows="4"></textarea>
     <div class="modal-buttons">
-      <button id="comment-submit">送信</button>
-      <button id="comment-cancel">キャンセル</button> <!-- ← 追加！ -->
+      <button id="comment-submit" class="btn-paper is-primary">
+  コメント送信
+</button>
+      <button id="comment-cancel" class="btn-paper is-ghost">キャンセル</button>
     </div>
     <div id="comment-list" style="margin-top: 15px;"></div>
   </div>
