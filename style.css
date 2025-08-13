@@ -1,18 +1,30 @@
+/* =========================
+   基本設定 & スペーシング
+   ========================= */
+:root{
+  --sp-1: 8px;
+  --sp-2: 16px;
+  --sp-3: 24px;
+  --sp-4: 32px;
+}
+
 body {
   background-color: #ffffff;
+  color: #2b2b2b;
   font-family: "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
   margin: 0;
   padding: 16px;
 }
 
+/* =========================
+   フォーム（投稿）オーバーレイ
+   ========================= */
 .form-wrapper {
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
-  backdrop-filter: blur(5px);
-  background-color: rgba(0, 0, 0, 0.2); /* 黒っぽい半透明もOK */
+  background-color: rgba(0, 0, 0, 0.0);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -20,737 +32,125 @@ body {
   pointer-events: none;
   transition: opacity 0.3s ease, transform 0.3s ease;
   z-index: 1000;
-  transform: scale(1);
-  display: flex;
-  justify-content: center;
-  align-items: center;
   padding: 20px;
   box-sizing: border-box;
+  transform: translateY(30px); /* 初期位置（少し下） */
+  opacity: 0;                  /* 初期は透明 */
+  transition: transform 0.4s ease-out, opacity 0.4s ease-out;
 }
-
 .form-wrapper.active {
-  opacity: 1;
-  pointer-events: auto;
-  transform: scale(1);
+  transform: translateY(0); /* 元の位置に */
+  opacity: 1;    
+  pointer-events: auto;           
 }
-
-
 
 form input,
 form textarea {
   width: 100%;
   padding: 10px;
   margin: 10px 0;
-  border: 2px solid #888;
+  border: 1px solid #a67c52;
   border-radius: 8px;
   font-size: 16px;
   box-sizing: border-box;
-  resize: none;
   background-color: #ffffff;
+  color: #333;
   height: auto;
   overflow-y: hidden;
-  overflow-x: hidden; /* ← 横スクロールも非表示にする */
+  overflow-x: hidden;
   resize: none;
 }
-
-form button {
-  background-color: #d2b48c;
-  color: white;
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  width: 100%;
+.form-wrapper form {
+  max-width: 400px; /* フォームの最大幅 */
+  width: 100%;      /* 画面幅に応じて縮小 */
+  border-radius: 10px; /* 角丸 */
+  padding: 20px;
+  box-sizing: border-box;
+  margin: 0 auto;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid #888;
+  background-color: #ffffff;
+  border-radius: 10px;
 }
 
-form button:hover {
-  background-color: #c49b72;
-}
 
-.display-toggle {
-  text-align: center;
-  margin-top: 16px;
-}
+.display-toggle { text-align: center; margin-top: 16px; }
 
-.diary-entry {
-  max-width: 500px;
-  margin: 20px auto;
-  background: url("image/notepaper.png") no-repeat center top;
-  background-size: cover;
-  padding: 24px;
-  border-radius: 12px;
-  background-color: #fff5dc;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+/* =========================
+   ヘッダー
+   ========================= */
+.app-header { background-color: #fff; padding: 1px 0;cursor: pointer; }
+.header-container{
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 12px; max-width: 540px; margin: 0 auto;
 }
-
-.entry h3 {
-  margin-top: 0;
-}
-
-.nav-buttons {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.nav-buttons button {
-  padding: 8px 16px;
-  font-size: 16px;
-  margin: 0 10px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  background-color: #aaa;
-  color: white;
-}
-
-#deleteBtn {
-  margin-top: 12px;
-  background-color: #d9534f;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-#deleteBtn:hover {
-  background-color: #c9302c;
-}
-.modal-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 32px;
-  height: 32px;
-  background: white;
-  border: 2px solid #333;
-  border-radius: 50%;
-  font-size: 20px;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-  z-index: 10;
-  padding: 0;
-}
+.header-logo { width: 100px; height: auto; margin: 0; display: block; }
+.icon-group { display: flex; gap: 16px; margin-left: auto; }
 
 @media (max-width: 600px) {
-  .modal-close {
-    top: 8px;
-    right: 8px;
-    width: 28px;
-    height: 28px;
-    font-size: 18px;
-  }
+  .app-header { justify-content: flex-start; }
 }
 
-/* スマホ対応 */
-@media (max-width: 600px) {
-  body {
-    padding: 10px;
-  }
-
-  .form-wrapper,
-  .diary-entry {
-    padding: 16px;
-  }
-
-  form button,
-  .nav-buttons button {
-    width: 100%;
-    margin: 8px 0;
-  }
-}
-
-
-.header-logo {
-  width: 40px;
-  height: auto;
-  object-fit: contain;
-  opacity: 0.95;
-  vertical-align: middle;
-  margin: 0;
-}
-
-
-
-/* 検索ボックスとボタンを投稿フォームの幅に揃える */
+/* =========================
+   検索ボックス
+   ========================= */
 .search-wrapper {
-  max-width: 540px;  /* ← 530px → 700px に拡張 */
+  max-width: 540px;
   margin: 16px auto;
   display: flex;
   gap: 8px;
   justify-content: center;
 }
-
-/* 入力欄（キーワード） */
 #searchInput {
-  flex: 1;
-  padding: 8px;
-  font-size: 16px;
-  border-radius: 8px;
-  border: 1px solid #888;
-}
-/* 検索・クリアボタン */
-#searchBtn,
-#clearBtn {
-  padding: 3px 10px;
-  font-size: 14px;
-  border-radius: 10px;
-  background-color: #d2b48c;
-  color: white;
-  white-space: nowrap;
+  flex: 1; padding: 8px; font-size: 16px;
+  border-radius: 8px; border: 1px solid #888;
 }
 
-#searchBtn:hover,
-#clearBtn:hover {
-  background-color: #c49b72;
-}
+button { white-space: nowrap; } /* 長文回避 */
 
-/* タグ表示 */
-.tag {
-  display: inline-block;
-  background-color: #f0e0b2;
-  color: #5c4a1d;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  margin-right: 4px;
-}
-
-.tag:hover {
-  background-color: #e2cfa4;
-}
-
-/* 💛 お気に入りボタン */
-.likeBtn {
-  margin-top: 10px;
-  background-color: #f7d8a9;
-  color: #5c3d1c;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.likeBtn:hover {
-  background-color: #f4c88a;
-}
-
-.likeCount {
-  margin-left: 8px;
-  font-size: 14px;
-  color: #333;
-}
-/* お気に入りボタン（未押下） */
-.likeBtn {
-  margin-top: 10px;
-  background-color: #f7d8a9;
-  color: #5c3d1c;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.likeBtn:hover {
-  background-color: #f4c88a;
-}
-
-/* お気に入り済（無効状態） */
-.likeBtn:disabled {
-  background-color: #e0e0e0;
-  color: #888888;
-  cursor: not-allowed;
-  opacity: 0.8;
-}
-
-.likeCount {
-  margin-left: 8px;
-  font-size: 14px;
-  color: #333;
-}/* ===== スプラッシュ画面 ===== */
-#splash-screen {
-  position: fixed;           /* 画面に固定 */
-  z-index: 9999;             /* 最前面に表示 */
-  background-color: #fff5dc; /* わら色 */
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  display: flex;             /* 中央寄せ */
-  align-items: center;
-  justify-content: center;
-  transition: opacity 1s ease; /* 消えるときふわっと */
-}
-
-/* ロゴのアニメーション */
-.splash-logo {
-  width: 100px;
-  height: 100px;
-  opacity: 0;                 /* 最初は見えない */
-  animation: fadeIn 1s forwards; /* 1秒でふわっと見える */
-}
-
-/* アニメーション定義 */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);  /* 少し小さい状態から */
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);    /* 元の大きさ・完全表示 */
-  }
-}
-/* コメント欄の全体 */
-.comment-section {
-  margin-top: 20px;
-  padding: 12px;
-  background-color: #fffaf0;
-  border-radius: 10px;
-  /* border-top: 2px dashed #ccc; ← これ削除 */
-}
-
-
-/* コメントタイトル */
-.comment-section {
-  margin-top: 20px;
-  padding: 16px;
-  background-color: #fffaf0;
-  border-radius: 10px;
-  box-sizing: border-box;
-  width: 100%; /* ← diary-entryに合わせて最大幅に */
-}
-
-.comment-name-input,
-.comment-textarea,
-.comment-submit-btn {
-  width: 100%; /* ← 全部の入力欄＆ボタンを幅100%で統一 */
-  box-sizing: border-box;
-}
-
-/* コメント送信ボタン（やさしいレトロ調） */
-#comment-submit {
-  margin-top: 8px;
-  padding: 8px 14px;
-  font-size: 14px;
-  background-color: #d2b48c;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: 'Kosugi Maru', 'Zen Maru Gothic', sans-serif;
-  transition: background-color 0.3s;
-}
-.modal-content {
-  background-color: #fdfbee;
-  padding: 20px;
-  border-radius: 10px;
-  width: 90%;
-  max-width: 450px;
-  position: relative; /* ← ×ボタンを右上に配置するために必要 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-#comment-submit:hover {
-  background-color: #c49b72;
-}
-.comment-name-input {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border: 1.5px solid #a27c52;
-  border-radius: 10px;
-  background-color: #ffffff;
-  font-size: 15px;
-  font-family: 'Kosugi Maru', 'Zen Maru Gothic', sans-serif;
-}
-
-.comment-textarea {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border: 1.5px solid #a27c52;
-  border-radius: 10px;
-  background-color: #ffffff;
-  font-size: 15px;
-  font-family: 'Kosugi Maru', 'Zen Maru Gothic', sans-serif;
-  resize: none;
-  overflow: hidden; /* ← これ追加！ */
-}
-
-.comment-submit-btn {
-  margin-top: 8px;
-  padding: 8px 14px;
-  font-size: 14px;
-  background-color: #d2b48c;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: 'Kosugi Maru', 'Zen Maru Gothic', sans-serif;
-  transition: background-color 0.3s;
-}
-
-.comment-submit-btn:hover {
-  background-color: #c49b72;
-}
-/* コメントモーダルの「×」ボタン位置調整 */
-.close-button {
-  position: absolute;
-  top: -20px;
-  right: -20px;
-  width: 40px;
-  height: 40px;
-  background-color: #fff;
-  border: 2px solid #ccc;
-  border-radius: 50%; /* ← ここで正円指定 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  line-height: 1; /* ← 追加して中央揃えを安定させる */
-  padding: 0;      /* ← 余計な高さを防ぐために追加 */
-  box-sizing: border-box; /* ← borderの分を含める */
-  cursor: pointer;
-}
-
-@media (max-width: 400px) {
-  .modal-content {
-    width: 95%;
-    max-width: none;
-  }
-}
-
-
-@media (max-width: 600px) {
-  .app-header {
-    justify-content: flex-start !important;
-    margin-left: 16px;
-    padding-left: 0 !important;  /* ← スマホでは左パディング無効に */
-  }
-  .header-title {
-    font-size: 20px;
-    text-align: left;
-  }
-  .header-logo {
-    margin-right: 6px;
-  }
-
-  
-}
-.diary-image {
-  max-width: 100%;
-  border-radius: 12px;
-  margin: 10px 0;
-}
-/* サムネイルバー */
-.thumbnail-bar {
-  display: flex;
-  overflow-x: auto;
-  padding: 10px;
-  margin: 20px auto;
-  gap: 12px;
-  max-width: 700px;
-}
-
-.thumbnail-item {
-  min-width: 100px;
-  max-width: 120px;
-  background-color: #fffaf0;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  padding: 6px;
-  font-size: 13px;
-  cursor: pointer;
-  text-align: center;
-}
-
-.thumbnail-item:hover {
-  background-color: #f5e4c5;
-}
-
-.thumbnail-image {
-  width: 100%;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-.thumbnail-text {
-  margin-top: 4px;
-  font-size: 12px;
-  color: #5c3d1c;
-}
-
-/* 本文折りたたみ */
-.expandable-content p.collapsed {
-  display: -webkit-box;
-  -webkit-line-clamp: 5;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* 続きを読むボタン */
-.readmore-btn {
-  background-color: #d2b48c;
-  color: white;
-  padding: 4px 10px;
-  font-size: 12px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 4px;
-  transition: background-color 0.3s ease; /* ← これがふわっと変わる魔法やで */
-}
-
-.readmore-btn:hover {
-  background-color: #c49b72;
-}
-.modal {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-  z-index: 9999;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-.modal.active {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-.modal-content {
-  width: 90%;
-  max-width: 400px;
-  background-color: #fffef5;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  animation: fadeScaleIn 0.3s ease;
-}
-
-
-.modal-content input,
-.modal-content textarea {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 10px;
-  border-radius: 6px;
-  border: 2px solid #a67c52;
-  font-family: inherit;
-  font-size: 16px;
-  box-sizing: border-box; /* ← これ追加！ */
-}
-
-.modal-buttons {
-  text-align: right;
-}
-
-.modal-buttons button {
-  margin-left: 10px;
-  padding: 6px 14px;
-  border-radius: 6px;
-  border: none;
-  font-size: 14px;
-  cursor: pointer;
-}
-@keyframes fadeScaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-#saveEditBtn {
-  background-color: #4caf50;
-  color: white;
-}
-
-#cancelEditBtn {
-  background-color: #ccc;
-}
-.delete-btn {
-  margin-top: 12px;
-  background-color: #d9534f;  /* ← これが赤！ */
-  color: white;
-  border: none;
-  padding: 7px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease; /* ← これがふわっと変わる魔法やで */
-}
-.delete-btn:hover {
-  background-color: #8d1b1b;  /* hover時に少し濃く */
-}
-.edit-btn {
-  margin-left: 8px;
-  margin-top: 12px;
-  background-color: #cdb899;  /* グレー背景 */
-  color: white;
-  border: none;
-  padding: 7px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease; /* ← これがふわっと変わる魔法やで */
-}
-.edit-btn:hover {
-  background-color: #907b7b;  /* hover時に少し濃く */
-}
-.close-button {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 22px;
-  cursor: pointer;
-}
-.comment-icon {
-  width: 28px;  /* ← ちょっと大きめ */
-  height: 28px;
-  vertical-align: middle; /* ← タグと高さを揃えるポイント！ */
-  margin-left: 10px;
-  opacity: 0.7;
-  transition: opacity 0.2s ease;
-  cursor: pointer;
-}
-
-.comment-icon:hover {
-  opacity: 1;
-  transform: scale(1.1); /* ← 少しだけふわっと大きく */
-}
-.comment-count {
-  font-size: 14px;
-  color: #444;
-  margin-left: 4px;
-  vertical-align: middle;
-}
-.menu-icons {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-left: auto;
-}
-
-.menu-icon {
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  opacity: 0.8;
-  transition: transform 0.2s ease;
-}
-
-.menu-icon:hover {
-  transform: scale(1.1);
-  opacity: 1;
-}
-.app-header {
-  background-color: #fff;
-  padding: 1px 0; /* ← 上下のみ余白、左右はcontainerに任せる */
-}
-.app-title {
-  display: flex;
-  align-items: center;
-  font-size: 1.5em;
-  font-weight: bold;
-  margin-left: 1px; /* ←★これを追加するだけ！ */
-}
-.header-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 12px;
+/* =========================
+   投稿カード
+   ========================= */
+.diary-entry {
   max-width: 540px;
-  margin: 0 auto;
-}
-
-
-.icon-group {
-  display: flex;
-  gap: 16px; /* ← アイコン間の余白はこれくらいで十分 */
-  margin-left: auto; /* ← タイトルの右にぴったり寄せる */
-}
-.form-box {
-  background: #fff;
-  max-width: 700px;
-  width: 90%;
+  margin: 20px auto;
   padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  background-color: #fefbf6; /* わら色寄せてもOK */
-  position: relative;
+  border-radius: 12px;
+  background-color: #fff5dc;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  box-sizing: border-box;
 }
-.close-btn {
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  background: transparent;
-  border: none;
-  font-size: 20px;
-  color: #666;
-  cursor: pointer;
-  transition: color 0.2s;
-  z-index: 10;
+.entry h3{
+  margin: 0 0 var(--sp-2) 0;
+  line-height: 1.3;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2b2b2b;
 }
-
-.close-btn:hover {
-  color: #000;
-}
-@media (max-width: 600px) {
-  .app-header {
-    margin: 0; /* ← 中央寄せを解除 */
-    padding-left: 12px; /* ← 左に少し余白をつけるとバランスが良い */
-    justify-content: flex-start; /* 念のため明示しておく */
-  }
-
-  .header-title {
-    font-size: 20px; /* 小さい画面でも文字サイズが合うように調整（任意） */
-  }
-}
-/* ヘッダーの基本レイアウト（再確認用の最小指定） */
-.app-header {
-  background-color: #fff;
-}
-
-.header-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 12px;
-  max-width: 540px;   /* ← 540px → 700px に拡張（フレーム幅に統一） */
-  margin: 0 auto;     /* 中央寄せ */
+/* タイトル下の点線 */
+.zigzag-divider {
+  width: 100%;
+  border-bottom: 2px dashed #a67c52; /* ベージュ寄りのブラウンで点線 */
+  margin: 2px 0 16px 0;
 }
 
 
-.header-logo {
-  width: 100px;         /* 大きさは少し大きめ */
-  height: auto;
-  margin: 0;           /* 上下の余白を削除 */
-  display: block;
+.expandable-content{
+  margin: 0 0 var(--sp-2) 0;
+  font-size: 1rem; line-height: 1.6; color: #333;
 }
-/* 投稿の by 行（小さな丸アイコン＋テキスト） */
+.expandable-content p.collapsed{
+  display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden;
+}
+.readmore-btn { /* 既存ボタンを紙ボタンに置き換える前提で最小限に */
+  font-size: 12px; margin-top: 4px;
+}
+
 .byline{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  margin:6px 0;
+  display: inline-flex; align-items: center;
+  gap: var(--sp-1); margin: 0 0 var(--sp-1) 0;
+  font-size: .85rem; color: #666;
 }
 .byline .avatar{
   width:28px;
@@ -758,34 +158,556 @@ form button:hover {
   border-radius:50%;
   object-fit:cover;
 }
-.icon-selector {
-  margin-top: 10px;
-}
-.icon-options {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.profile-icon {
-  width: 48px;
-  height: 48px;
-  cursor: pointer;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  transition: border 0.2s;
-}
-.profile-icon.selected {
-  border-color: #333;
+
+.diary-image { max-width: 100%; border-radius: 12px; margin: 10px 0; }
+
+/* 投稿カード下部の操作 */
+.entry-actions {
+  display: flex; gap: 8px; align-items: center; margin-top: var(--sp-3);
 }
 
-/* ▼ 投稿カード内のボタン配置修正 */
-.entry-actions {
-  margin-top: 8px;        /* by行との間隔 */
-  display: flex;          /* 横並び（縦並びにしたいなら column に） */
-  gap: 8px;               /* 2つのボタンの間隔 */
+/* =========================
+   お気に入り＆コメント（メタ行）
+   ========================= */
+.entry-meta-actions{
+  display:flex; align-items:center; gap:16px;
+  margin: 6px 0 14px 0;
+}
+.entry-fav-inline,
+.entry-comment-inline{
+  display:inline-flex; align-items:center; gap:6px;
+}
+.likeCount, .commentCount { font-size:.95rem; color:#666; min-width:1.2em; text-align:right; }
+.entry-comment-inline .commentBtn{
+  width:32px; height:32px; padding:0; background:transparent; border:none;
+}
+.commentIcon{ width:20px; height:20px; display:block; pointer-events:none; user-select:none; }
+
+/* =========================
+   サムネイルバー
+   ========================= */
+.thumbnail-bar {
+  display: flex; overflow-x: auto; padding: 10px; margin: 20px auto;
+  gap: 12px; max-width: 700px;
+}
+.thumbnail-item {
+  min-width: 100px; max-width: 120px;
+  background-color: #fffaf0; border: 1px solid #ccc; border-radius: 10px;
+  padding: 6px; font-size: 13px; cursor: pointer; text-align: center;
+}
+.thumbnail-item:hover { background-color: #f5e4c5; }
+.thumbnail-image { width:100%; height:60px; object-fit:cover; border-radius:8px; }
+.thumbnail-text { margin-top: 4px; font-size: 12px; color: #5c3d1c; }
+
+/* =========================
+   付箋タグ（遊び心）
+   ========================= */
+.entry-tags{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+.entry-tags .tag{
+  position:relative; display:inline-block;
+  padding:6px 12px; border-radius:6px; background:#fff7d6; color:#3e3427;
+  box-shadow: 2px 3px 6px rgba(0,0,0,.15);
+  font-size:.95rem; line-height:1.2; white-space:nowrap;
+  transition: transform .18s ease, box-shadow .18s ease;
+  cursor: pointer;
+}
+.entry-tags .tag::after{
+  content:""; position:absolute; top:0; right:0; width:0; height:0;
+  border-top:10px solid #f1c252; border-left:10px solid transparent;
+  filter: drop-shadow(-1px 1px 1px rgba(0,0,0,.15));
+}
+.entry-tags .tag:nth-child(6n+1){ transform: rotate(-1.5deg); }
+.entry-tags .tag:nth-child(6n+2){ transform: rotate(.8deg); }
+.entry-tags .tag:nth-child(6n+3){ transform: rotate(-.6deg); }
+.entry-tags .tag:nth-child(6n+4){ transform: rotate(1.2deg); }
+.entry-tags .tag:nth-child(6n+5){ transform: rotate(-.9deg); }
+.entry-tags .tag:nth-child(3n){ background:#fff8dd; }
+.entry-tags .tag:nth-child(3n+1){ background:#fdf2c6; }
+.entry-tags .tag:nth-child(3n+2){ background:#fff6e3; }
+@media (hover:hover){ .entry-tags .tag:hover{ transform: translateY(-3px) rotate(0deg); box-shadow: 4px 6px 10px rgba(0,0,0,.2); } }
+@media (prefers-reduced-motion: reduce){ .entry-tags .tag{ transition:none; transform:none; } }
+@media (max-width: 480px){ .entry-tags{ gap:6px; } .entry-tags .tag{ padding:5px 10px; font-size:.9rem; } }
+
+/* =========================
+   モーダル（コメント/編集兼用）
+   投稿フォームと同じ“下からスッ＋フワッ”、暗幕なし
+   ========================= */
+.modal{
+  position: fixed; inset: 0;
+  display:flex; justify-content:center; align-items:center;
+  background: transparent;                /* ← 暗幕なし */
+  z-index: 9999;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .35s ease-out;
+}
+.modal.active{
+  opacity: 1; visibility: visible; pointer-events: auto;
+}
+
+.modal-content{
+  width: 90%; max-width: 450px;
+  background-color: #fffef5; color:#2b2b2b;
+  padding: 20px; border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.15); /* 影は軽めに */
+  transform: translateY(24px);            /* ← 少し下から */
+  opacity: 0;                              /* ← フワッ */
+  transition: transform .35s ease-out, opacity .35s ease-out;
+  position: relative;
+  animation: none;                         /* 既存の拡大フェードを無効化 */
+}
+.modal.active .modal-content{
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* ※ 既存の @keyframes fadeScaleIn は未使用になるので残っていてもOK */
+
+
+/* 入力系は既存の見た目を踏襲 */
+.modal-content input,
+.modal-content textarea{
+  width:100%; padding:10px; margin-top:10px;
+  border:1.5px solid #a67c52; border-radius:10px;
+  font-size:15px; box-sizing:border-box;
+  background:#fff; color:#333;
+}
+
+/* ボタン類 */
+.modal-buttons{ text-align:right; }
+.modal-buttons button{ margin-left:10px; }
+
+/* 閉じるボタン */
+.close-button{
+  position:absolute; top:10px; right:15px;
+  width:32px; height:32px; background:#fff;
+  border:2px solid #ccc; border-radius:50%;
+  font-size:20px; font-weight:bold; line-height:1;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+}
+
+
+/* =========================
+   スプラッシュ
+   ========================= */
+#splash-screen{
+  position: fixed; inset:0; z-index: 9999; background-color: #fff5dc;
+  display:flex; align-items:center; justify-content:center;
+  transition: opacity 1s ease;
+}
+.splash-logo{ width:100px; height:100px; opacity:0; animation: fadeIn 1s forwards; }
+@keyframes fadeIn{ from{opacity:0; transform:scale(.9);} to{opacity:1; transform:scale(1);} }
+
+/* =========================
+   レトロ紙ボタン（統一）
+   ========================= */
+.btn-paper{
+  --paper-bg: #fff7df;
+  --paper-edge: #e3caa3;
+  --ink: #4b3f2f;
+  --hover-lift: 2px;
+  --press-depth: 1px;
+
+  appearance: none;
+  border: 0;
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-size: 0.95rem;
+  line-height: 1.1;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255,255,255,.55), rgba(255,255,255,0) 40%),
+    radial-gradient(circle at 70% 80%, rgba(0,0,0,.03), rgba(0,0,0,0) 45%),
+    linear-gradient(#fffdf3, var(--paper-bg));
+  box-shadow:
+    0 2px 4px rgba(0,0,0,.12),
+    inset 0 -2px 0 var(--paper-edge);
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+  user-select: none;
+}
+.btn-paper *{ pointer-events:none; }
+@media (hover:hover){
+  .btn-paper:hover{
+    transform: translateY(calc(-1 * var(--hover-lift)));
+    box-shadow: 0 4px 8px rgba(0,0,0,.16), inset 0 -2px 0 var(--paper-edge);
+    filter: brightness(1.02);
+  }
+}
+.btn-paper:active{
+  transform: translateY(var(--press-depth));
+  box-shadow: 0 1px 2px rgba(0,0,0,.12), inset 0 2px 3px rgba(0,0,0,.08);
+}
+.btn-paper:focus-visible{
+  outline: 3px solid rgba(166,124,82,.35);
+  outline-offset: 2px;
+}
+
+/* バリエーション */
+.btn-paper.is-primary{ --paper-bg:#fff5d2; --paper-edge:#d7b98d; }
+.btn-paper.is-ghost  { --paper-bg:#fffaf0; --paper-edge:#e6d8c0; color:#5c4a1d; }
+.btn-paper.is-danger { --paper-bg:#ffe1dd; --paper-edge:#e3a8a2; color:#7a2b2b; }
+
+/* 既存IDの専用調整（例：コメント送信） */
+#comment-submit.btn-paper{ width:100%; margin-top:10px; }
+
+/* =========================
+   レスポンシブ微調整
+   ========================= */
+@media (max-width: 600px) {
+  body { padding: 10px; }
+  .form-wrapper, .diary-entry { padding: 16px; }
+  .header-logo { width: 40px; opacity:.95; }
+}
+.form-avatar-group {
+  display: flex;
+  gap: 8px; /* アイコン間の余白 */
+  align-items: center; /* 垂直中央揃え */
+  flex-wrap: nowrap; /* 折り返さず一列に表示 */
+}
+
+.form-avatar-group img {
+  width: 40px;  /* アイコンの横幅 */
+  height: 40px; /* アイコンの縦幅 */
+  border-radius: 50%;
+  object-fit: cover;
+}
+/* === 投稿フォームの丸形アイコン（小さく＋横一列）=== */
+.icon-selector label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #555;
+}
+
+.icon-options {
+  display: flex;
+  align-items: center;
+  gap: 8px;         /* アイコン間の余白 */
+  flex-wrap: nowrap;/* 折り返さず一列 */
+  overflow-x: auto; /* 幅が足りなければ横スクロール */
+}
+
+.profile-icon {
+  width: 36px;      /* ここを28〜40pxで好みに調整OK */
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover; /* 画像の切り抜き */
+  flex: 0 0 auto;   /* つぶれ防止 */
+  cursor: pointer;
+  display: block;
+  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+  padding-top: 100px;   /* 上に余白 */
+  padding-bottom: 100px;/* 下に余白 */
+  padding: 3px;
+}
+/* === 選択中アイコンに枠を付ける === */
+.icon-options input[type="radio"] {
+  display: none; /* ラジオボタン自体は非表示 */
+}
+
+.icon-options input[type="radio"]:checked + .profile-icon {
+  outline: 3px solid #f4b23d; /* 枠の色と太さ */
+  outline-offset: 2px;        /* 枠と画像の間隔 */
+  border-radius: 50%;
+}
+/* クリックで選択中のアイコンに枠を付ける（HTMLにradioが無い版） */
+.profile-icon.is-selected {
+  transform: scale(1.08);                 /* 拡大 */
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.18));
+  border-radius: 50%;
+}
+/* === 投稿フォーム内のスクロールバーを非表示にする === */
+.form-wrapper form {
+  overflow: hidden !important; /* スクロールを出さない */
+  max-height: none;            /* 高さ制限を外す */
+}
+
+/* Webkit系（Chrome / Safari / Edge）でスクロールバー非表示 */
+.form-wrapper form::-webkit-scrollbar {
+  display: none;
+}
+
+/* Firefoxでスクロールバー非表示 */
+.form-wrapper form {
+  scrollbar-width: none;
+}
+/* === 投稿フォームを画面中央に固定 === */
+.form-wrapper {
+  display: flex;
+  justify-content: center;
   align-items: center;
 }
 
-.entry-actions button {
-  width: auto; /* ボタンサイズは内容に合わせる */
+.form-wrapper form {
+  position: fixed;          /* 固定配置 */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 完全中央寄せ */
+  margin: 0;                /* 自動マージン無効化 */
+}
+/* === スマホでフォームを正確に中央固定（svh＋safe-area対応） === */
+.form-wrapper{
+  height: 100svh; /* iOSのアドレスバー分を除いた高さ */
+}
+
+.form-wrapper form{
+  position: fixed;
+  top: 12svh;              /* 画面の“見えてる高さ”のちょうど真ん中 */
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+
+  /* 画面からはみ出さない幅・高さ（セーフエリア考慮） */
+  max-width: min(400px, 92vw);
+  width: 92vw;
+  max-height: calc(100svh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px);
+
+  /* 中身はスクロール可能（←バーは非表示にする） */
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;                /* Firefoxでバー非表示 */
+}
+.form-wrapper form::-webkit-scrollbar{ display: none; } /* WebKitでバー非表示 */
+
+/* スマホ時のヘッダーロゴ縮小 */
+@media (max-width: 540px) {
+  .header-logo {
+    width: 23px;  /* 適度なサイズに縮小 */
+  }
+}
+/* ヘッダー右側アイコンのサイズを統一 */
+.menu-icon {
+  width: 40px;
+  height: 40px;
+  display: block;
+  flex-shrink: 0;  /* つぶれ防止 */
+}
+
+/* スマホ時はさらに小さく */
+@media (max-width: 600px) {
+  .menu-icon {
+    width: 40px;
+    height: 40px;
+  }
+  .header-logo {
+    width: 80px; /* 既にある指定を再掲しておくと安心 */
+  }
+}
+/* 投稿・キャンセルボタンの横並び */
+.form-buttons {
+  display: flex;
+  gap: 8px; /* ボタン間の余白 */
+  justify-content: flex-end; /* 右寄せ（中央や左寄せも可） */
+}
+/* 前へ・次へボタンを中央寄せ */
+.nav-buttons {
+  display: flex;
+  justify-content: center; /* 中央寄せ */
+  gap: 8px; /* ボタン間の余白 */
+  margin-top: 16px; /* 必要に応じて調整 */
+}
+/* ── LUMINA: 過去投稿 縦並び表示 ── */
+#lumina-past-grid {
+  max-width: 540px;   /* 横幅はサムネやメインと揃える */
+  margin: 12px auto 32px;
+  padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;          /* カード同士の縦間隔 */
+}
+
+/* カードの見た目は既存の .diary-entry を継承 */
+#lumina-past-grid .diary-entry {
+  max-width: 100%;
+  margin: 0;
+}
+/* ── サムネ帯のスクロール調整（止まり心地UP） ── */
+#lumina-thumb-track {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+#lumina-thumb-track .thumbnail-item {
+  scroll-snap-align: start;
+}
+/* ── Lumina: 3ブロックの幅と余白を完全同期 ── */
+#diary-container,
+#lumina-thumb-strip .thumbnail-bar,
+#lumina-past-grid {
+  max-width: 540px;         /* ← 好みで 680–800px に調整OK（3者共通） */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+/* サムネ帯の上下間隔をメインと過去投稿で統一 */
+#lumina-thumb-strip { margin: 8px 0 16px; }
+
+/* 過去投稿：縦リストの見た目微調整（高さ揃え＆読みやすさ） */
+#lumina-past-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;                /* カード間の縦間隔 */
+  margin-top: 8px;
+  margin-bottom: 40px;
+}
+
+/* グリッド内で .diary-entry の中央寄せ・固定幅を無効化して等幅に */
+#lumina-past-grid .diary-entry {
+  max-width: 100%;
+  margin: 0;
+  padding: 14px;
+  background: #fffef8;
+  border: 1px solid #e8d9bd;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.08);
+  box-sizing: border-box;
+}
+
+/* タイトル2行・本文3行で綺麗に省略（高さ揃え用のmin-height付き） */
+#lumina-past-grid .entry-title,
+#lumina-past-grid h3 {
+  font-size: 1.05rem;
+  line-height: 1.35;
+  font-weight: 700;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;     /* ← タイトル2行 */
+  overflow: hidden;
+  min-height: calc(1em * 1.35 * 2);
+  margin: 0;
+}
+
+#lumina-past-grid .entry-content,
+#lumina-past-grid .expandable-content {
+  color: #444;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;     /* ← 本文3行 */
+  overflow: hidden;
+  min-height: calc(1em * 1.6 * 3);
+}
+
+/* サムネ画像の高さを見やすい基準に（そろえる） */
+#lumina-thumb-track .thumbnail-image {
+  height: 80px;              /* 60→80で視認性UP。小さめが良ければ60に戻してOK */
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* サムネ帯の“止まり心地” */
+#lumina-thumb-track {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+#lumina-thumb-track .thumbnail-item { scroll-snap-align: start; }
+/* ── 過去投稿：その場展開用パネル ── */
+.inline-entry {
+  max-width: 720px;           /* メイン・サムネと幅を揃える（必要に応じて同値に） */
+  margin: 6px auto 18px;
+  padding: 14px;
+  background: #fffef8;
+  border: 1px solid #e8d9bd;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.08);
+  box-sizing: border-box;
+}
+.inline-entry .entry-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.35;
+  margin: 0 0 4px 0;
+  display: block;             /* 展開では省略せず全文 */
+}
+.inline-entry .expandable-content p { 
+  display: block;             /* “続きを読む”を使わず全文表示 */
+  -webkit-line-clamp: initial;
+  overflow: visible;
+}
+/* === textarea: 自動高さ調整用（スクロールバーを出さない） === */
+.modal-content textarea,
+#editContent,
+#comment-text {
+  overflow: hidden;
+  resize: none;
+}
+
+/* ── 過去投稿：その場展開（カード内）で行数制限を解除 ── */
+#lumina-past-grid .diary-entry.is-expanded .entry-title,
+#lumina-past-grid .diary-entry.is-expanded .entry-content,
+#lumina-past-grid .diary-entry.is-expanded .expandable-content p {
+  display: block;
+  -webkit-line-clamp: initial;
+  overflow: visible;
+  white-space: normal;
+}
+/* === fix: 過去投稿の「続きを読む」が隠れる問題を解消 =================== */
+/* ラッパーは切り詰めない。切り詰めは <p>.collapsed にだけ適用する */
+#lumina-past-grid .expandable-content {
+  display: block !important;
+  -webkit-line-clamp: initial !important;
+  overflow: visible !important;
+}
+
+/* 「続きを読む」用の折り畳みは <p class="collapsed"> に対して行う */
+#lumina-past-grid .expandable-content p.collapsed {
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 5 !important;  /* メインと同じ 5 行 */
+  overflow: hidden !important;
+}
+/* === textarea: 自動高さ調整用（スクロールバーを出さない） === */
+.modal-content textarea,
+#editContent,
+#comment-text {
+  overflow: hidden;
+  resize: none;
+}
+#lumina-thumb-track {
+  -ms-overflow-style: auto; /* IE/Edge */
+  scrollbar-width: auto; /* Firefox */
+}
+#lumina-thumb-track::-webkit-scrollbar {
+  display: block;                 /* Chrome/Safari: バー非表示 */
+  overflow-x: auto; /* 横スクロールバーを表示 */
+}
+
+/* 省エネ（“動きを減らす”設定に配慮） */
+@media (prefers-reduced-motion: reduce) {
+  #lumina-thumb-track { scroll-behavior: auto; }
+}
+/* === サムネイルバー：横スクロールバーを確実に表示 === */
+.thumbnail-bar,
+#lumina-thumb-track {
+  overflow-x: auto;      /* 横方向にスクロール可能 */
+  overflow-y: hidden;    /* 縦の余計なバーは消す */
+  -ms-overflow-style: auto; /* 旧Edge/IE 用 */
+  scrollbar-width: auto;    /* Firefox：バーを表示（thinにしたいなら 'thin'） */
+}
+
+/* WebKit系（Chrome / Safari / 新Edge） */
+.thumbnail-bar::-webkit-scrollbar,
+#lumina-thumb-track::-webkit-scrollbar {
+  height: 10px;          /* 横バーの太さ（お好みで 6〜12px） */
+}
+
+.thumbnail-bar::-webkit-scrollbar-track,
+#lumina-thumb-track::-webkit-scrollbar-track {
+  background: #f3e6c9;   /* トラック（レール）色：紙風 */
+}
+
+.thumbnail-bar::-webkit-scrollbar-thumb,
+#l
+/* 過去投稿カード：タイトルの位置を少し下げる（強制上書き） */
+#lumina-past-grid .diary-entry .entry-title,
+#lumina-past-grid .diary-entry h3 {
+  margin-top: 8px !important;   /* 4〜12pxで好み調整OK */
+}
+
+/* 前へ／次へボタンを非表示 */
+#prevBtn,
+#nextBtn {
+  display: none !important;
 }
