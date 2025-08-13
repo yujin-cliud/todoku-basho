@@ -1,60 +1,98 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lumina</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>Lumina - 届く場所｜想いが届く、つながる</title>
+  <meta name="description" content="Lumina（届く場所）は、あなたの体験や想いを匿名で投稿し、やさしく共有できるWebアプリです。検索・お気に入り・タグで見つけやすく、心に触れるストーリーが集まります。">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://yujin-cliud.github.io/Lumina/">
+
+  <!-- OGP -->
+  <meta property="og:title" content="Lumina - 届く場所｜想いが届く、つながる">
+  <meta property="og:description" content="匿名で想いを届けるWebアプリ。投稿・検索・お気に入り・タグ機能で、心に触れるストーリーを見つけよう。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yujin-cliud.github.io/Lumina/">
+  <meta property="og:image" content="https://yujin-cliud.github.io/Lumina/ogp-image.jpg">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Lumina - 届く場所｜想いが届く、つながる">
+  <meta name="twitter:description" content="匿名で想いを届けるWebアプリ。投稿・検索・お気に入り・タグ機能で、心に触れるストーリーを見つけよう。">
+  <meta name="twitter:image" content="https://yujin-cliud.github.io/Lumina/ogp-image.jpg">
+
+  <!-- フォント / CSS（元のまま） -->
   <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Zen+Maru+Gothic&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 
-  <!-- Firebase CDN -->
-  <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  <!-- 任意：ファビコン類（用意できたら有効化）
+  <link rel="icon" href="/Lumina/favicon.ico">
+  <link rel="apple-touch-icon" href="/Lumina/apple-touch-icon.png">
+  <link rel="manifest" href="/Lumina/manifest.webmanifest">
+  -->
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyB4e1nm-ZktpfSMPVW-umIiw6WQmxs0sqg",
-    authDomain: "todoku-basho.firebaseapp.com",
-    projectId: "todoku-basho",
-    storageBucket: "todoku-basho.appspot.com",
-    messagingSenderId: "395140717821",
-    appId: "1:395140717821:web:b68a7dce7e5b6f3eb7b294"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  window.db = db;
-  window.collection = collection;
-  window.addDoc = addDoc;
-  window.getDocs = getDocs;
-  window.deleteDoc = deleteDoc;
-  window.doc = doc;
-  window.updateDoc = updateDoc;
- 
-  const auth = getAuth(app);
-  signInAnonymously(auth)
-    .then(() => {
-      console.log("匿名ログイン成功");
-    })
-    .catch((error) => {
-      console.error("ログイン失敗:", error);
-    });
-
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      window.currentUser = user;
+  <!-- 構造化データ（WebSite + SearchAction）-->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Lumina - 届く場所",
+    "url": "https://yujin-cliud.github.io/Lumina/",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://yujin-cliud.github.io/Lumina/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
     }
-  });
-  onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    window.currentUser = user;
-    console.log("ログイン成功：", user.uid); // ←これ
   }
-});
-</script>
+  </script>
 
+  <!-- Firebase CDN（元のまま） -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB4e1nm-ZktpfSMPVW-umIiw6WQmxs0sqg",
+      authDomain: "todoku-basho.firebaseapp.com",
+      projectId: "todoku-basho",
+      storageBucket: "todoku-basho.appspot.com",
+      messagingSenderId: "395140717821",
+      appId: "1:395140717821:web:b68a7dce7e5b6f3eb7b294"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window.db = db;
+    window.collection = collection;
+    window.addDoc = addDoc;
+    window.getDocs = getDocs;
+    window.deleteDoc = deleteDoc;
+    window.doc = doc;
+    window.updateDoc = updateDoc;
+
+    const auth = getAuth(app);
+    signInAnonymously(auth)
+      .then(() => {
+        console.log("匿名ログイン成功");
+      })
+      .catch((error) => {
+        console.error("ログイン失敗:", error);
+      });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        window.currentUser = user;
+      }
+    });
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        window.currentUser = user;
+        console.log("ログイン成功：", user.uid);
+      }
+    });
+  </script>
 </head>
 <body>
 <!-- 編集モーダル -->
@@ -65,15 +103,15 @@
     <textarea id="editContent" placeholder="本文" rows="4"></textarea>
     <input type="text" id="editTags" placeholder="タグ（カンマ区切り）" />
     <!-- 画像URL（Cloudinary） -->
-<label for="editImageUrl">画像URL</label>
-<input type="url" id="editImageUrl" placeholder="https://res.cloudinary.com/..." />
+    <label for="editImageUrl">画像URL</label>
+    <input type="url" id="editImageUrl" placeholder="https://res.cloudinary.com/..." />
 
-<!-- 画像アップロード（Cloudinary unsigned） -->
-<div class="image-upload-row">
-  <input type="file" id="editImageFile" accept="image/*" style="display:none;">
-  <button type="button" id="pickImageBtn" class="btn-paper is-ghost">画像を選ぶ</button>
-  <small id="uploadHint" class="hint">選択後に自動アップロードされます</small>
-</div>
+    <!-- 画像アップロード（Cloudinary unsigned） -->
+    <div class="image-upload-row">
+      <input type="file" id="editImageFile" accept="image/*" style="display:none;">
+      <button type="button" id="pickImageBtn" class="btn-paper is-ghost">画像を選ぶ</button>
+      <small id="uploadHint" class="hint">選択後に自動アップロードされます</small>
+    </div>
 
     <div class="modal-buttons">
       <button id="saveEditBtn" class="btn-paper is-primary">保存</button>
@@ -81,18 +119,15 @@
     </div>
   </div>
 </div>
-  <!-- スプラッシュ画面（最初にロゴだけを出す箱） -->
+
 <!-- スプラッシュ -->
 <div id="splash-screen">
   <img src="image/logo.svg" alt="Lumina" class="splash-logo" />
 </div>
 
-  <header class="app-header">
+<header class="app-header">
   <div class="header-container">
-    <!-- ロゴだけ（新しいアプリ名に合わせて alt を変更） -->
     <img src="image/logo.svg" alt="Lumina" class="header-logo" />
-
-    <!-- 右側アイコン群（クラス名はCSSに合わせて .icon-group を使用） -->
     <div class="icon-group">
       <img src="image/icon_post.svg" class="menu-icon" id="iconPost" alt="投稿" />
       <img src="image/icon_tag.svg" class="menu-icon" id="iconTag" alt="タグ検索" />
@@ -100,23 +135,23 @@
     </div>
   </div>
 </header>
-  <div class="form-wrapper">
+
+<div class="form-wrapper">
   <div class="form-box">
     <button id="closeFormBtn" class="modal-close">×</button>
     <form id="diary-form">
       <input type="text" id="username" placeholder="お名前（省略可）" />
       <div class="icon-selector">
-  <label>アイコンを選択：</label>
-  <div class="icon-options">
-    <img src="image/avatars/プロフィール-01.svg" class="profile-icon" data-icon="image/avatars/プロフィール-01.svg" alt="icon1">
-    <img src="image/avatars/プロフィール-02.svg" class="profile-icon" data-icon="image/avatars/プロフィール-02.svg" alt="icon2">
-    <img src="image/avatars/プロフィール-03.svg" class="profile-icon" data-icon="image/avatars/プロフィール-03.svg" alt="icon3">
-    <img src="image/avatars/プロフィール-04.svg" class="profile-icon" data-icon="image/avatars/プロフィール-04.svg" alt="icon4">
-    <img src="image/avatars/プロフィール-05.svg" class="profile-icon" data-icon="image/avatars/プロフィール-05.svg" alt="icon5">
-    <img src="image/avatars/プロフィール-06.svg" class="profile-icon" data-icon="image/avatars/プロフィール-06.svg" alt="icon6">
-
-  </div>
-</div>
+        <label>アイコンを選択：</label>
+        <div class="icon-options">
+          <img src="image/avatars/プロフィール-01.svg" class="profile-icon" data-icon="image/avatars/プロフィール-01.svg" alt="icon1">
+          <img src="image/avatars/プロフィール-02.svg" class="profile-icon" data-icon="image/avatars/プロフィール-02.svg" alt="icon2">
+          <img src="image/avatars/プロフィール-03.svg" class="profile-icon" data-icon="image/avatars/プロフィール-03.svg" alt="icon3">
+          <img src="image/avatars/プロフィール-04.svg" class="profile-icon" data-icon="image/avatars/プロフィール-04.svg" alt="icon4">
+          <img src="image/avatars/プロフィール-05.svg" class="profile-icon" data-icon="image/avatars/プロフィール-05.svg" alt="icon5">
+          <img src="image/avatars/プロフィール-06.svg" class="profile-icon" data-icon="image/avatars/プロフィール-06.svg" alt="icon6">
+        </div>
+      </div>
 
       <input type="text" id="title" placeholder="タイトル" />
       <textarea id="content" placeholder="ここに日記を書く…" rows="3"></textarea>
@@ -128,32 +163,30 @@
   </div>
 </div>
 
+<div class="search-wrapper">
+  <input type="text" id="searchInput" placeholder="キーワードで検索（タグ・タイトル・本文）" />
+  <button id="searchBtn" class="btn-paper is-ghost">検索</button>
+  <button id="clearBtn" class="btn-paper is-ghost">クリア</button>
+</div>
 
+<div id="diary-container" class="diary-entry"></div>
 
-  <div class="search-wrapper">
-    <input type="text" id="searchInput" placeholder="キーワードで検索（タグ・タイトル・本文）" />
-    <button id="searchBtn" class="btn-paper is-ghost">検索</button>
-    <button id="clearBtn" class="btn-paper is-ghost">クリア</button>
-  </div>
-
-  <div id="diary-container" class="diary-entry"></div>
-<!-- ▼ サムネ横スクロール帯（サムネはここへ描画） -->
+<!-- ▼ サムネ横スクロール帯 -->
 <section id="lumina-thumb-strip" aria-label="サムネ">
   <div class="thumbnail-bar" id="lumina-thumb-track" data-autoslide="true"></div>
 </section>
 
-<!-- ▼ 過去投稿（縦リストでここに並べる） -->
+<!-- ▼ 過去投稿（縦リスト） -->
 <section id="lumina-past-grid" aria-label="過去投稿一覧"></section>
 
-  <div class="nav-buttons">
+<div class="nav-buttons">
   <button type="button" id="prevBtn" class="btn-paper is-ghost">◀ 前へ</button>
   <button type="button" id="nextBtn" class="btn-paper is-ghost">次へ ▶</button>
 </div>
 
+<script type="module" src="script.js"></script>
 
-  <script type="module" src="script.js"></script>
-<!-- コメントモーダル（これだけ残す！） -->
-<!-- コメントモーダル（修正後） -->
+<!-- コメントモーダル -->
 <div id="comment-modal" class="modal">
   <div class="modal-content">
     <span id="close-comment-modal" class="close-button">&times;</span>
@@ -161,14 +194,11 @@
     <input type="text" id="comment-name" placeholder="名前（省略可）" />
     <textarea id="comment-text" class="comment-textarea" placeholder="コメントを入力..." rows="4"></textarea>
     <div class="modal-buttons">
-      <button id="comment-submit" class="btn-paper is-primary">
-  コメント送信
-</button>
+      <button id="comment-submit" class="btn-paper is-primary">コメント送信</button>
       <button id="comment-cancel" class="btn-paper is-ghost">キャンセル</button>
     </div>
     <div id="comment-list" style="margin-top: 15px;"></div>
   </div>
 </div>
-
 </body>
 </html>
