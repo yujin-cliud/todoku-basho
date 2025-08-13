@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://yujin-cliud.github.io/Lumina/sitemap.xml
+Sitemap: https://yujin-cliud.github.io/Lumina/sitemap.txt
