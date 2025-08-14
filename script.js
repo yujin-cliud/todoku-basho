@@ -335,8 +335,13 @@ function applyQueryFromURL() {
 
   currentIndex = 0;
   displayEntry();
-  document.getElementById("searchInput")?.value = (new URLSearchParams(location.search).get("q") || "").trim();
-  updateNavButtonsDisabled?.();
+  {
+  const _el = document.getElementById("searchInput");
+  if (_el) {
+    _el.value = (new URLSearchParams(location.search).get("q") || "").trim();
+  }
+}
+
 }
 
 
