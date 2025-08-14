@@ -596,9 +596,9 @@ function toggleInlineInPlace(card, entry) {
     const keyword = document.getElementById("searchInput").value.trim().toLowerCase();
     if (!keyword) return alert("検索ワードを入力してな！");
     filteredData = diaryData.filter(e =>
-      e.title.toLowerCase().includes(keyword) ||
-      e.content.toLowerCase().includes(keyword) ||
-      (e.tags || []).join(",").toLowerCase().includes(keyword)
+      (e.title   || "").toLowerCase().includes(keyword) ||
+      (e.content || "").toLowerCase().includes(keyword) ||
+      (Array.isArray(e.tags) ? e.tags.join(",") : String(e.tags || "")).toLowerCase().includes(keyword)
     );
     currentIndex = 0;
     displayEntry();
@@ -1021,15 +1021,91 @@ editImageFile?.addEventListener("change", async (e) => {
     if (editImageFile) editImageFile.value = "";
   }
 });
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
+// ===== Google ログイン/ログアウト (Firebase v10.12.2) =====
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const auth = getAuth();
+const provider = new GoogleAuthProvider();
+
+// ★ ボタンの参照は毎回安全に取り直す
+function getAuthButtons() {
+  return {
+    loginBtn:  document.getElementById("loginBtn"),
+    logoutBtn: document.getElementById("logoutBtn"),
+  };
+}
+
+// ★ クリックを結び直す（DOMが出来てから）
+function bindAuthButtonEvents() {
+  const { loginBtn, logoutBtn } = getAuthButtons();
+  if (!loginBtn || !logoutBtn) return; // まだDOMがない場合は何もしない
+
+  // 重複登録を避けるために一度クリア
+  loginBtn.onclick = null;
+  logoutBtn.onclick = null;
+
+  loginBtn.onclick = async () => {
+
+    try {
+      const res = await signInWithPopup(auth, provider);
+      console.log("Googleログイン成功:", { uid: res.user.uid, email: res.user.email });
+    } catch (e) {
+      console.error("Googleログイン失敗:", e);
+      // ★ ポップアップがブロックされたらリダイレクト方式に自動フォールバック
+      if (e && e.code === "auth/popup-blocked") {
+        const { signInWithRedirect } =
+          await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+        await signInWithRedirect(auth, provider);
+      }
+    }
+  };
+
+  logoutBtn.onclick = async () => {
+    try {
+      await signOut(auth);
+      console.log("ログアウトしました");
+    } catch (e) {
+      console.error("ログアウト失敗:", e);
+    }
+  };
+}
+
+// ★ ページ読み込み時に必ず結び直す
+document.addEventListener("DOMContentLoaded", bindAuthButtonEvents);
+// すでにDOMが出来ているケースにも対応
+bindAuthButtonEvents();
+
+// ★ 状態に応じてボタンの表示を切替
 onAuthStateChanged(auth, (user) => {
-  console.log("=== 本番の認証状態 ===", {
-    uid: user?.uid,
-    isAnonymous: user?.isAnonymous,
-    email: user?.email || null,
-  });
-  window.__auth = user; // ついでにグローバルに出しておく（Consoleで確認しやすい）
+  const { loginBtn, logoutBtn } = getAuthButtons();
+  const isLoggedIn = !!user && !user.isAnonymous;
+
+  if (loginBtn)  loginBtn.style.display  = isLoggedIn ? "none"        : "inline-block";
+  if (logoutBtn) logoutBtn.style.display = isLoggedIn ? "inline-block" : "none";
+
+  console.log("Auth state:", { uid: user?.uid ?? null, isAnonymous: user?.isAnonymous ?? null });
 });
+
+
+// ② この下に既存の「安全版 認証状態ログ」IIFEがある
+(async () => {
+  while (!window.db) {
+    await new Promise(r => setTimeout(r, 50));
+  }
+  onAuthStateChanged(auth, (user) => {
+    console.log("=== 本番の認証状態 ===", {
+      uid: user?.uid,
+      isAnonymous: user?.isAnonymous,
+      email: user?.email || null,
+    });
+    window.__auth = user;
+    window.currentUser = user;
+  });
+})();
 
