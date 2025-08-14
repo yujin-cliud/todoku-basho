@@ -310,6 +310,35 @@ function updateNavButtonsDisabled() {
   if (prevBtn) prevBtn.disabled = (currentIndex <= 0);
   if (nextBtn) nextBtn.disabled = (currentIndex >= filteredData.length - 1);
 }
+function applyQueryFromURL() {
+  const params = new URLSearchParams(location.search);
+
+  // ← 入力欄に入れる用は raw（元の文字）
+  const raw = (params.get("q") || "").trim();
+  if (!raw) return;
+
+  // ← フィルタ用は小文字化して使う
+  const q = raw.toLowerCase();
+
+  // ここで確実に検索欄へ表示させる
+  const input = document.getElementById("searchInput");
+  if (input) input.value = raw;
+
+  // 既存の検索ロジックと同条件でフィルタ
+  filteredData = diaryData.filter(e =>
+    (e.title || "").toLowerCase().includes(q) ||
+    (e.content || "").toLowerCase().includes(q) ||
+    (Array.isArray(e.tags) ? e.tags.join(",") : String(e.tags || ""))
+      .toLowerCase()
+      .includes(q)
+  );
+
+  currentIndex = 0;
+  displayEntry();
+  document.getElementById("searchInput")?.value = (new URLSearchParams(location.search).get("q") || "").trim();
+  updateNavButtonsDisabled?.();
+}
+
 
 prevBtn?.addEventListener("click", () => {
   if (currentIndex > 0) {
@@ -656,6 +685,8 @@ document.querySelector(".header-logo")?.addEventListener("click", async () => {
   displayEntry();
   updateNavButtonsDisabled?.();
 
+  
+
   // 画面上部へスクロール
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
@@ -919,10 +950,19 @@ submitBtn?.addEventListener("click", async () => {
 
   // 初期ロード
 (async () => {
-    await loadEntries();
+  await loadEntries();
+
+  // URLパラメータ ?q= があれば、初期表示に検索を適用
+  applyQueryFromURL();
+
+  // q が無いときだけ従来の初期表示を行う
+  if (!new URLSearchParams(location.search).get("q")) {
     displayEntry();
-    window.initThumbAutoSlide?.();
+  }
+
+  window.initThumbAutoSlide?.();
 })();
+
 });
  // DOMContentLoaded ここまで
 
