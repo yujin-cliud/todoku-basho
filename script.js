@@ -956,6 +956,9 @@ submitBtn?.addEventListener("click", async () => {
   // 初期ロード
 (async () => {
   await loadEntries();
+  // ★ 追加：通常表示の初期状態を全件にする
+filteredData = [...diaryData];
+currentIndex = 0;
 
   // URLパラメータ ?q= があれば、初期表示に検索を適用
   applyQueryFromURL();
