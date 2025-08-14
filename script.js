@@ -1021,11 +1021,15 @@ editImageFile?.addEventListener("change", async (e) => {
     if (editImageFile) editImageFile.value = "";
   }
 });
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
 
 const auth = getAuth();
-console.log("=== ログイン情報チェック ===");
-console.log({
-  uid: auth.currentUser?.uid,
-  isAnonymous: auth.currentUser?.isAnonymous
+onAuthStateChanged(auth, (user) => {
+  console.log("=== 本番の認証状態 ===", {
+    uid: user?.uid,
+    isAnonymous: user?.isAnonymous,
+    email: user?.email || null,
+  });
+  window.__auth = user; // ついでにグローバルに出しておく（Consoleで確認しやすい）
 });
+
