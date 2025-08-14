@@ -1,8 +1,0 @@
-{
-  "name": "lumina",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "sitemap": "node tools/generate-sitemap.mjs"
-  }
-}
