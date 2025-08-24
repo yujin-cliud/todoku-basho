@@ -711,3 +711,13 @@ button { white-space: nowrap; } /* 長文回避 */
 #nextBtn {
   display: none !important;
 }
+/* 未ログイン案内（フォームの中で邪魔にならないトーン） */
+.form-login-prompt {
+  margin: 8px 0 12px;
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+}
+
+/* 汎用の非表示 */
+.is-hidden { display: none !important; }

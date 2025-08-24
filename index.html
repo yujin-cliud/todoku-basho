@@ -50,51 +50,47 @@
   </script>
 
   <!-- Firebase CDN（元のまま） -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  <!-- Firebase CDN（匿名ログインは使わない） -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import {
+    getAuth, onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyB4e1nm-ZktpfSMPVW-umIiw6WQmxs0sqg",
-      authDomain: "todoku-basho.firebaseapp.com",
-      projectId: "todoku-basho",
-      storageBucket: "todoku-basho.appspot.com",
-      messagingSenderId: "395140717821",
-      appId: "1:395140717821:web:b68a7dce7e5b6f3eb7b294"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyB4e1nm-ZktpfSMPVW-umIiw6WQmxs0sqg",
+    authDomain: "todoku-basho.firebaseapp.com",
+    projectId: "todoku-basho",
+    storageBucket: "todoku-basho.appspot.com",
+    messagingSenderId: "395140717821",
+    appId: "1:395140717821:web:b68a7dce7e5b6f3eb7b294"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    window.db = db;
-    window.collection = collection;
-    window.addDoc = addDoc;
-    window.getDocs = getDocs;
-    window.deleteDoc = deleteDoc;
-    window.doc = doc;
-    window.updateDoc = updateDoc;
+  const app = initializeApp(firebaseConfig);
 
-    const auth = getAuth(app);
-    signInAnonymously(auth)
-      .then(() => {
-        console.log("匿名ログイン成功");
-      })
-      .catch((error) => {
-        console.error("ログイン失敗:", error);
-      });
+  // Firestore を window に公開（既存コード依存のため）
+  const db = getFirestore(app);
+  window.db = db;
+  window.collection = collection;
+  window.addDoc = addDoc;
+  window.getDocs = getDocs;
+  window.deleteDoc = deleteDoc;
+  window.doc = doc;
+  window.updateDoc = updateDoc;
 
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        window.currentUser = user;
-      }
-    });
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        window.currentUser = user;
-        console.log("ログイン成功：", user.uid);
-      }
-    });
-  </script>
+  // Auth 初期化（匿名ログインは行わない）
+  const auth = getAuth(app);
+
+  // 認証状態は 1 本だけで監視し、window.currentUser に反映
+  onAuthStateChanged(auth, (user) => {
+    window.currentUser = user || null;
+    console.log("Auth:", user ? { uid: user.uid, isAnonymous: !!user.isAnonymous } : "signed out");
+  });
+</script>
+
 </head>
 <body>
 <!-- 編集モーダル -->
@@ -136,25 +132,25 @@
       <img src="image/icon_favorite.svg" class="menu-icon" id="iconFavorite" alt="お気に入り" />
     </div>
   </div>
-  <!-- Auth UI（Googleログイン/ログアウト） -->
-<div id="authArea" style="position:absolute; right:12px; top:12px; display:flex; gap:8px; z-index:50;">
-  <button id="loginBtn" style="
-    background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px 12px;cursor:pointer;">
-    <img src="https://developers.google.com/identity/images/g-logo.png"
-         alt="G" style="width:16px;height:16px;vertical-align:-3px;margin-right:6px;">
-    Googleでログイン
-  </button>
-  <button id="logoutBtn" style="
-    background:#f6f6f6;border:1px solid #ddd;border-radius:8px;padding:8px 12px;cursor:pointer;display:none;">
-    ログアウト
-  </button>
-</div>
+  
 
 </header>
 
 <div class="form-wrapper">
   <div class="form-box">
     <button id="closeFormBtn" class="modal-close">×</button>
+    <!-- 未ログイン時だけ表示する案内（ログインしたらJSで消える） -->
+<div id="loginPrompt" class="form-login-prompt">
+  投稿するにはログインが必要です。
+  <button type="button" id="loginBtn" class="btn-paper is-primary" style="margin-left:8px;">
+    Googleでログイン
+  </button>
+</div>
+
+<!-- ログイン済みだけ表示（初期は隠す） -->
+<form id="diary-form" class="is-hidden">
+  <!-- 既存の入力欄たち（名前／タイトル／本文／タグ…） -->
+
     <form id="diary-form">
       <input type="text" id="username" placeholder="お名前（省略可）" />
       <div class="icon-selector">
