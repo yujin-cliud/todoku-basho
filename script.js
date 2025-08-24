@@ -1043,43 +1043,68 @@ function getAuthButtons() {
 
 // ★ クリックを結び直す（DOMが出来てから）
 function bindAuthButtonEvents() {
-  const { loginBtn, logoutBtn } = getAuthButtons();
-  if (!loginBtn || !logoutBtn) return; // まだDOMがない場合は何もしない
-
-  // 重複登録を避けるために一度クリア
-  loginBtn.onclick = null;
-  logoutBtn.onclick = null;
-
-  loginBtn.onclick = async () => {
-
-    try {
-      const res = await signInWithPopup(auth, provider);
-      console.log("Googleログイン成功:", { uid: res.user.uid, email: res.user.email });
-    } catch (e) {
-      console.error("Googleログイン失敗:", e);
-      // ★ ポップアップがブロックされたらリダイレクト方式に自動フォールバック
-      if (e && e.code === "auth/popup-blocked") {
-        const { signInWithRedirect } =
-          await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
-        await signInWithRedirect(auth, provider);
-      }
-    }
-  };
-
-  logoutBtn.onclick = async () => {
-    try {
-      await signOut(auth);
-      console.log("ログアウトしました");
-    } catch (e) {
-      console.error("ログアウト失敗:", e);
-    }
-  };
-}
-
+   const { loginBtn, logoutBtn } = getAuthButtons();
+   if (loginBtn) {
+     loginBtn.onclick = null;
+     loginBtn.onclick = async () => {
+       try {
+         const res = await signInWithPopup(auth, provider);
+         console.log("Googleログイン成功:", { uid: res.user.uid, email: res.user.email });
+       } catch (e) {
+         console.error("Googleログイン失敗:", e);
+         if (e && e.code === "auth/popup-blocked") {
+           const { signInWithRedirect } =
+             await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+           await signInWithRedirect(auth, provider);
+         }
+       }
+     };
+   }
+   if (logoutBtn) {
+     logoutBtn.onclick = null;
+     logoutBtn.onclick = async () => {
+       try { await signOut(auth); console.log("ログアウトしました"); }
+       catch (e) { console.error("ログアウト失敗:", e); }
+     };
+   }
+ }
 // ★ ページ読み込み時に必ず結び直す
 document.addEventListener("DOMContentLoaded", bindAuthButtonEvents);
 // すでにDOMが出来ているケースにも対応
 bindAuthButtonEvents();
+// フォーム出し分け
+function applyAuthUIToForm(user) {
+  const form = document.getElementById("diary-form");
+  const prompt = document.getElementById("loginPrompt");
+  const isLoggedIn = !!user && !user.isAnonymous;
+
+  if (form && prompt) {
+    if (isLoggedIn) {
+      form.classList.remove("is-hidden");
+      prompt.classList.add("is-hidden");
+    } else {
+      form.classList.add("is-hidden");
+      prompt.classList.remove("is-hidden");
+    }
+  }
+}
+
+// 認証状態が変わったらUI反映（既存の onAuthStateChanged に追記でもOK）
+onAuthStateChanged(auth, (user) => {
+  window.currentUser = user || null;
+  applyAuthUIToForm(user);
+
+  // 既存のボタン表示切替（あれば）も安全に
+  const { loginBtn, logoutBtn } = getAuthButtons();
+  if (loginBtn)  loginBtn.style.display  = user ? "none" : "inline-block";
+  if (logoutBtn) logoutBtn.style.display = user ? "inline-block" : "none";
+});
+
+// 初回反映（DOM用意後）
+document.addEventListener("DOMContentLoaded", () => {
+  applyAuthUIToForm(window.currentUser || null);
+  bindAuthButtonEvents(); // フォーム内の loginBtn を結び直す
+});
 
 // ★ 状態に応じてボタンの表示を切替
 onAuthStateChanged(auth, (user) => {
