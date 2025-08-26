@@ -1,6 +1,6 @@
 import {
   getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc,
-  getDoc, setDoc, increment
+  getDoc, setDoc, increment, query, orderBy, limit, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 document.addEventListener("DOMContentLoaded", () => {
   let diaryData = [];
@@ -89,22 +89,49 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // 投稿読み込み
-  async function loadEntries() {
-    diaryData = [];
-    const querySnapshot = await window.getDocs(window.collection(window.db, "diaries"));
-    querySnapshot.forEach(d => {
-      diaryData.push({ ...d.data(), id: d.id });
-    });
-    diaryData.sort((a, b) => new Date(b.date) - new Date(a.date));
-    filteredData = [...diaryData];
-    currentIndex = 0;
-  }
+async function loadEntries() {
+  diaryData = [];
 
-  function formatDate(iso) {
-    const d = new Date(iso);
-    return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
-  }
+  // すべてのドキュメントを取得（createdAt が無い古い投稿も含む）
+  const snap = await getDocs(collection(window.db, "diaries"));
+  snap.forEach(d => diaryData.push({ ...d.data(), id: d.id }));
+
+  // createdAt（Timestamp / {seconds,...}）と旧 date(ISO) の両対応で新しい順にソート
+  diaryData.sort((a, b) => {
+    const da = getEntryDate(a);
+    const db = getEntryDate(b);
+    return (db?.getTime?.() || 0) - (da?.getTime?.() || 0);
+  });
+
+  filteredData = [...diaryData];
+  currentIndex = 0;
+}
+
+
+
+  function getEntryDate(entry) {
+  const ts = entry?.createdAt;
+
+  // Firestore Timestamp 型（toDate を持つ）
+  if (ts && typeof ts.toDate === "function") return ts.toDate();
+
+  // {seconds, nanoseconds} のプレーンオブジェクトで来るケース
+  if (ts && typeof ts.seconds === "number") return new Date(ts.seconds * 1000);
+
+  // 旧データ: ISO文字列 'date'
+  if (entry?.date) return new Date(entry.date);
+
+  return null;
+}
+
+function formatDateJa(d) {
+  if (!d) return "";
+  return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+}
+function formatDate(iso) {
+  const d = iso ? new Date(iso) : null;
+  return formatDateJa(d);
+}
 
   function convertNewlinesToBr(text) {
     return text.replace(/\n/g, "<br>");
@@ -189,8 +216,8 @@ afterNode.insertAdjacentElement("afterend", expandable);
     avatarImg.src = "image/avatars/プロフィール-01.svg"; // フォールバック
 
     const byText = document.createElement("small");
-    byText.innerHTML = `by ${entry.name} ｜ ${formatDate(entry.date)}`;
-
+    const _d = getEntryDate(entry);
+    byText.innerHTML = `by ${entry.authorName || "匿名さん"}${_d ? " ｜ " + formatDateJa(_d) : ""}`;
     byline.appendChild(avatarImg);
     byline.appendChild(byText);
     entryHTML.appendChild(byline);
@@ -464,7 +491,8 @@ function fillCardFull(card, entry) {
   avatarImg.alt = "avatar";
   avatarImg.src = "image/avatars/プロフィール-01.svg"; // フォールバック
   const byText = document.createElement("small");
-  byText.innerHTML = `by ${entry.name || "匿名さん"} ｜ ${formatDate(entry.date)}`;
+  const _d = getEntryDate(entry);
+  byText.innerHTML = `by ${entry.authorName || "匿名さん"}${_d ? " ｜ " + formatDateJa(_d) : ""}`;
   byline.appendChild(avatarImg);
   byline.appendChild(byText);
   card.appendChild(byline);
@@ -636,13 +664,13 @@ function displayThumbnails() {
     if (entry.imageUrl) {
       div.innerHTML = `
         <img src="${entry.imageUrl}" class="thumbnail-image" />
-        <div class="thumbnail-text">${entry.title || "(無題)"}<br><small>${entry.name || ""}</small></div>`;
+        <div class="thumbnail-text">${entry.title || "(無題)"}<br><small>${entry.authorName || ""}</small></div>`;
     } else {
       div.innerHTML = `
         <div class="thumbnail-text">
           <strong>${entry.title || "(無題)"}</strong><br>
           ${contentPreview}${(entry.content || "").length > 30 ? "…" : ""}<br>
-          <small>${entry.name || ""}</small>
+          <small>${entry.authorName || ""}</small>
         </div>`;
     }
 
@@ -705,37 +733,56 @@ submitBtn?.addEventListener("click", async () => {
   const contentEl= document.getElementById("content");
   const tagsEl   = document.getElementById("tags");
 
-  const name     = (nameEl?.value || "").trim() || "匿名さん";
-  const title    = (titleEl?.value || "").trim();
-  const content  = (contentEl?.value || "").trim();
-  const tagsRaw  = (tagsEl?.value || "").trim();
+  // 名前は「入力値 > GoogleのdisplayName > 匿名さん」の優先順
+const authorName =
+  (nameEl?.value || "").trim() ||
+  (window.currentUser?.displayName || "").trim() ||
+  "匿名さん";
 
-  // 入力チェック（最低限）
-  if (!title)   return alert("タイトルを入力して下さい");
-  if (!content) return alert("本文を入力して下さい");
+const title    = (titleEl?.value || "").trim();
+const content  = (contentEl?.value || "").trim();
+const tagsRaw  = (tagsEl?.value || "").trim();
 
-  // タグは配列化（空なら []）
-  const tags = tagsRaw
-    ? tagsRaw.split(",").map(t => t.trim()).filter(Boolean)
-    : [];
-  // 画像は今は任意（未実装なら空でOK）
-  const imageUrl = "";
+// 入力チェック（最低限）
+if (!title)   return alert("タイトルを入力して下さい");
+if (!content) return alert("本文を入力して下さい");
 
-  const entry = {
-    uid,
-    name,
-    title,
-    content,
-    tags,
-    imageUrl,
-    likes: 0,
-    date: new Date().toISOString()
-  };
+// タグは配列化（空なら []）
+const tags = tagsRaw
+  ? tagsRaw.split(",").map(t => t.trim()).filter(Boolean)
+  : [];
+
+// 画像は今は任意（未実装なら空でOK）
+const imageUrl = "";
+
+const entry = {
+  uid,
+  authorName,
+  title,
+  content,
+  tags,
+  imageUrl,
+  likes: 0,
+  createdAt: serverTimestamp()   // ← サーバ時刻を保存
+};
+
+
 
   try {
     // Firestoreへ保存
-    const colRef = window.collection(window.db, "diaries");
-    await window.addDoc(colRef, entry);
+const colRef = window.collection(window.db, "diaries");
+const ref = await window.addDoc(colRef, entry);
+
+// ★ サーバー確定版を読み直す
+const snap  = await getDoc(ref);
+const saved = { id: ref.id, ...snap.data() };
+
+// ★ UI 更新には saved を使う
+diaryData.unshift(saved);
+filteredData = [...diaryData];
+currentIndex = 0;
+displayEntry();
+
 
     // 入力クリア
     if (nameEl)    nameEl.value = "";
@@ -1115,6 +1162,7 @@ onAuthStateChanged(auth, (user) => {
   if (logoutBtn) logoutBtn.style.display = isLoggedIn ? "inline-block" : "none";
 
   console.log("Auth state:", { uid: user?.uid ?? null, isAnonymous: user?.isAnonymous ?? null });
+autoFillName(user);
 });
 
 
@@ -1134,3 +1182,45 @@ onAuthStateChanged(auth, (user) => {
   });
 })();
 
+// ===== 名前のオートフィル & ローカル保存（Step 1）=====
+const LUMINA_NAME_KEY = "luminaName";
+
+// 保存済みの名前を取得
+function getSavedName() {
+  try { return localStorage.getItem(LUMINA_NAME_KEY) || ""; } catch { return ""; }
+}
+
+// 名前を保存
+function saveName(v) {
+  try { localStorage.setItem(LUMINA_NAME_KEY, v ?? ""); } catch {}
+}
+
+// input#username に値をセット
+function setNameField(val) {
+  const el = document.getElementById("username");
+  if (el && typeof val === "string") el.value = val;
+}
+
+/**
+ * ログイン状態に応じて名前欄を自動入力
+ * 優先度：現在の入力値 → localStorage → Googleの displayName
+ */
+function autoFillName(user) {
+  const input = document.getElementById("username");
+  if (!input) return;
+
+  const current   = (input.value || "").trim();
+  const fromLS    = (getSavedName() || "").trim();
+  const fromAuth  = ((user && user.displayName) || "").trim();
+
+  const next = current || fromLS || fromAuth;
+  if (next) setNameField(next);
+}
+
+// 入力が変わったらローカル保存（次回の初期値にする）
+document.addEventListener("input", (e) => {
+  if (e?.target && e.target.id === "username") {
+    saveName(e.target.value.trim());
+  }
+  autoFillName(window.currentUser || null);
+});

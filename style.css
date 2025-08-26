@@ -232,33 +232,46 @@ button { white-space: nowrap; } /* 長文回避 */
    モーダル（コメント/編集兼用）
    投稿フォームと同じ“下からスッ＋フワッ”、暗幕なし
    ========================= */
+/* 投稿モーダル(.form-wrapper)と同じ挙動に合わせる */
 .modal{
   position: fixed; inset: 0;
   display:flex; justify-content:center; align-items:center;
-  background: transparent;                /* ← 暗幕なし */
+  background: transparent;
   z-index: 9999;
   opacity: 0; visibility: hidden; pointer-events: none;
-  transition: opacity .35s ease-out;
+  transform: translateY(30px); /* ← 下からスッ */
+  transition:
+    transform 0.4s ease-out,
+    opacity   0.4s ease-out,
+    visibility 0s linear 0.4s; /* 非表示へ遅延で切替 */
 }
 .modal.active{
   opacity: 1; visibility: visible; pointer-events: auto;
+  transform: translateY(0);     /* ← 元の位置へ */
+  transition:
+    transform 0.4s ease-out,
+    opacity   0.4s ease-out,
+    visibility 0s;              /* すぐ可視状態に */
 }
 
+
+/* 中身も投稿モーダルと同じ“ふわっ”に時間を統一 */
 .modal-content{
   width: 90%; max-width: 450px;
   background-color: #fffef5; color:#2b2b2b;
   padding: 20px; border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.15); /* 影は軽めに */
-  transform: translateY(24px);            /* ← 少し下から */
-  opacity: 0;                              /* ← フワッ */
-  transition: transform .35s ease-out, opacity .35s ease-out;
+  box-shadow: 0 8px 24px rgba(0,0,0,.15);
+  transform: translateY(30px);  /* 30px に統一 */
+  opacity: 0;
+  transition: transform 0.4s ease-out, opacity 0.4s ease-out; /* 0.4s に統一 */
   position: relative;
-  animation: none;                         /* 既存の拡大フェードを無効化 */
+  animation: none;
 }
 .modal.active .modal-content{
   transform: translateY(0);
   opacity: 1;
 }
+
 
 /* ※ 既存の @keyframes fadeScaleIn は未使用になるので残っていてもOK */
 
