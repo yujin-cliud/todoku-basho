@@ -1,6 +1,6 @@
 import {
   getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc,
-  getDoc, setDoc, increment, query, orderBy, limit, serverTimestamp
+  getDoc, setDoc, increment, query, orderBy, limit, startAfter, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 document.addEventListener("DOMContentLoaded", () => {
   let diaryData = [];
@@ -83,30 +83,103 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   document.getElementById("closeFormBtn")?.addEventListener("click", function () {
-    const formWrapper = document.querySelector(".form-wrapper");
-    if (formWrapper) {
-      formWrapper.classList.remove("active");
+  const formWrapper = document.querySelector(".form-wrapper");
+  if (formWrapper) {
+    formWrapper.classList.remove("active");
+  }
+});
+
+// ▼ マイグレーション関数を追加 ▼
+window.migrateCreatedAt = async function() {
+  const colRef = window.collection(window.db, "diaries");
+  const snap = await getDocs(colRef);
+
+  for (const d of snap.docs) {
+    const data = d.data();
+
+    if (data.createdAt) continue;
+
+    let ts = null;
+    if (data.date) {
+      const parsed = new Date(data.date);
+      if (!isNaN(parsed)) {
+        ts = { seconds: Math.floor(parsed.getTime() / 1000), nanoseconds: 0 };
+      }
     }
-  });
+    const updateVal = ts ? new Date(ts.seconds * 1000) : new Date();
+
+    try {
+      await updateDoc(doc(window.db, "diaries", d.id), { createdAt: updateVal });
+      console.log("migrated:", d.id, updateVal);
+    } catch (e) {
+      console.error("migration failed:", d.id, e);
+    }
+  }
+  alert("マイグレーション完了！");
+}
+// ▲ ここまで追加 ▲
+
+
+// ページング状態
+let lastVisible = null;
+let hasMore = true;
+let isLoading = false;
 
 async function loadEntries() {
+
   diaryData = [];
+  filteredData = [];
+  currentIndex = 0;
+  lastVisible = null;
+  hasMore = true;
 
-  // すべてのドキュメントを取得（createdAt が無い古い投稿も含む）
-  const snap = await getDocs(collection(window.db, "diaries"));
-  snap.forEach(d => diaryData.push({ ...d.data(), id: d.id }));
+  const q = query(
+    window.collection(window.db, "diaries"),
+    orderBy("createdAt", "desc"),
+    orderBy("__name__", "desc"),
+    limit(10)
+  );
+  const snap = await getDocs(q);
+  if (snap.empty) {
+    hasMore = false;
+    return;
+  }
 
-  // createdAt（Timestamp / {seconds,...}）と旧 date(ISO) の両対応で新しい順にソート
-  diaryData.sort((a, b) => {
-    const da = getEntryDate(a);
-    const db = getEntryDate(b);
-    return (db?.getTime?.() || 0) - (da?.getTime?.() || 0);
-  });
-
+  snap.docs.forEach(d => diaryData.push({ ...d.data(), id: d.id }));
   filteredData = [...diaryData];
   currentIndex = 0;
+  lastVisible = snap.docs[snap.docs.length - 1] || null;
+  if (snap.size < 10) hasMore = false;
 }
 
+async function loadEntriesPage() {
+  if (!hasMore || isLoading) return;
+  isLoading = true;
+  try {
+    const q = query(
+      window.collection(window.db, "diaries"),
+      orderBy("createdAt", "desc"),
+      orderBy("__name__", "desc"),
+      startAfter(lastVisible),
+      limit(10)
+    );
+    const snap = await getDocs(q);
+    if (snap.empty) {
+      hasMore = false;
+      return;
+    }
+
+    snap.docs.forEach(d => diaryData.push({ ...d.data(), id: d.id }));
+    filteredData = [...diaryData];
+
+    lastVisible = snap.docs[snap.docs.length - 1] || null;
+    if (snap.size < 10) hasMore = false;
+
+    displayEntry();
+  } finally {
+    isLoading = false;
+  }
+}
 
 
   function getEntryDate(entry) {
@@ -1000,23 +1073,39 @@ displayEntry();
   // 🔸 レトロ紙ボタンをコメント送信に“確実に”適用（ここが今回の追記）
   document.getElementById("comment-submit")?.classList.add("btn-paper", "is-primary");
 
-  // 初期ロード
+// 初期ロード
 (async () => {
   await loadEntries();
-  // ★ 追加：通常表示の初期状態を全件にする
-filteredData = [...diaryData];
-currentIndex = 0;
+  filteredData = [...diaryData];
+  currentIndex = 0;
 
-  // URLパラメータ ?q= があれば、初期表示に検索を適用
   applyQueryFromURL();
 
-  // q が無いときだけ従来の初期表示を行う
   if (!new URLSearchParams(location.search).get("q")) {
     displayEntry();
   }
 
   window.initThumbAutoSlide?.();
 })();
+
+// ▼ 追加：もっと見るボタン
+const moreBtn = document.getElementById("loadMoreBtn");
+if (moreBtn) {
+  moreBtn.addEventListener("click", async () => {
+    if (!hasMore || isLoading) return;
+    moreBtn.disabled = true;
+    const prevText = moreBtn.textContent;
+    moreBtn.textContent = "読み込み中…";
+    await loadEntriesPage();
+    moreBtn.textContent = hasMore ? "もっと見る" : "これ以上ありません";
+    if (!hasMore) {
+      moreBtn.setAttribute("disabled", "true");
+    } else {
+      moreBtn.disabled = false;
+    }
+  });
+}
+
 
 });
  // DOMContentLoaded ここまで
