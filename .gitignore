@@ -1,0 +1,3 @@
+
+# ignore Windows installers
+*.exe
