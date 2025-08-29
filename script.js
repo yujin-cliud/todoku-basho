@@ -211,11 +211,11 @@ afterNode.insertAdjacentElement("afterend", expandable);
     byline.className = "byline";
 
     const avatarImg = document.createElement("img");
-    avatarImg.className = "avatar";
-    avatarImg.alt = "avatar";
-    avatarImg.src = "image/avatars/プロフィール-01.svg"; // フォールバック
+      avatarImg.className = "avatar";
+  avatarImg.alt = "avatar";
+  avatarImg.src = "image/avatars/1.png"; // フォールバックをPNGに統一
 
-    const byText = document.createElement("small");
+  const byText = document.createElement("small");
     const _d = getEntryDate(entry);
     byText.innerHTML = `by ${entry.authorName || "匿名さん"}${_d ? " ｜ " + formatDateJa(_d) : ""}`;
     byline.appendChild(avatarImg);
@@ -487,9 +487,9 @@ function fillCardFull(card, entry) {
   const byline = document.createElement("div");
   byline.className = "byline";
   const avatarImg = document.createElement("img");
-  avatarImg.className = "avatar";
+    avatarImg.className = "avatar";
   avatarImg.alt = "avatar";
-  avatarImg.src = "image/avatars/プロフィール-01.svg"; // フォールバック
+  avatarImg.src = "image/avatars/1.png"; // フォールバックをPNGに統一
   const byText = document.createElement("small");
   const _d = getEntryDate(entry);
   byText.innerHTML = `by ${entry.authorName || "匿名さん"}${_d ? " ｜ " + formatDateJa(_d) : ""}`;
