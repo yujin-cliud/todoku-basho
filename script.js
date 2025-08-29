@@ -34,6 +34,21 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   let selectedIcon = null;
+  // --- 追加：投稿用に選択中アイコンURLを取得（未選択時はデフォルト） ---
+function getSelectedIconUrlForEntry() {
+  if (typeof selectedIcon === "string" && selectedIcon.trim()) {
+    return selectedIcon;
+  }
+  const picked = document.querySelector(".profile-icon.selected, .profile-icon.is-selected");
+  if (picked && picked.dataset && picked.dataset.icon) return picked.dataset.icon;
+  return "image/avatars/1.png";
+}
+
+// --- 追加：表示用の優先ロジック（entry > profiles > デフォルト） ---
+function resolveIconUrlForEntry(entry) {
+  if (entry && entry.iconUrl) return entry.iconUrl;
+  return "image/avatars/1.png";
+}
 
   // 初期：プロフィール反映
   (async () => {
@@ -206,27 +221,31 @@ afterNode.insertAdjacentElement("afterend", expandable);
 
 
     
-    // ── by行：アイコン＋ユーザー名・日付（ここは1行目に残す）
     const byline = document.createElement("div");
-    byline.className = "byline";
+byline.className = "byline";
 
-    const avatarImg = document.createElement("img");
-      avatarImg.className = "avatar";
-  avatarImg.alt = "avatar";
-  avatarImg.src = "image/avatars/1.png"; // フォールバックをPNGに統一
+const avatarImg = document.createElement("img");
+avatarImg.className = "avatar";
+avatarImg.alt = "avatar";
+avatarImg.src = resolveIconUrlForEntry(entry); // 最優先ロジック適用
 
-  const byText = document.createElement("small");
-    const _d = getEntryDate(entry);
-    byText.innerHTML = `by ${entry.authorName || "匿名さん"}${_d ? " ｜ " + formatDateJa(_d) : ""}`;
-    byline.appendChild(avatarImg);
-    byline.appendChild(byText);
-    entryHTML.appendChild(byline);
+const byText = document.createElement("small");
+const _d = getEntryDate(entry);
+byText.innerHTML = `by ${entry.authorName || "匿名さん"}${_d ? " ｜ " + formatDateJa(_d) : ""}`;
+byline.appendChild(avatarImg);
+byline.appendChild(byText);
+entryHTML.appendChild(byline);
 
-    // プロフィールからアイコン差し替え（非同期）
-    (async () => {
+// 投稿に iconUrl が無いときだけ profiles を補完
+(async () => {
+  if (!entry.iconUrl && entry.uid) {
+    try {
       const prof = await getProfile(entry.uid);
       if (prof?.iconUrl) avatarImg.src = prof.iconUrl;
-    })();
+    } catch (_) {}
+  }
+})();
+
 
    
 
@@ -487,23 +506,26 @@ function fillCardFull(card, entry) {
   const byline = document.createElement("div");
   byline.className = "byline";
   const avatarImg = document.createElement("img");
-    avatarImg.className = "avatar";
-  avatarImg.alt = "avatar";
-  avatarImg.src = "image/avatars/1.png"; // フォールバックをPNGに統一
-  const byText = document.createElement("small");
-  const _d = getEntryDate(entry);
-  byText.innerHTML = `by ${entry.authorName || "匿名さん"}${_d ? " ｜ " + formatDateJa(_d) : ""}`;
-  byline.appendChild(avatarImg);
-  byline.appendChild(byText);
-  card.appendChild(byline);
+avatarImg.className = "avatar";
+avatarImg.alt = "avatar";
+avatarImg.src = resolveIconUrlForEntry(entry); // 最優先ロジック適用
+const byText = document.createElement("small");
+const _d = getEntryDate(entry);
+byText.innerHTML = `by ${entry.authorName || "匿名さん"}${_d ? " ｜ " + formatDateJa(_d) : ""}`;
+byline.appendChild(avatarImg);
+byline.appendChild(byText);
+card.appendChild(byline);
 
-  // プロフィールからアイコン差し替え（非同期）
-  (async () => {
+// 投稿に iconUrl が無いときだけ profiles を補完
+(async () => {
+  if (!entry.iconUrl && entry.uid) {
     try {
       const prof = await getProfile(entry.uid);
       if (prof?.iconUrl) avatarImg.src = prof.iconUrl;
     } catch (_) {}
-  })();
+  }
+})();
+
 
   // お気に入り／コメント（メインと同じUI）
   const metaActions = document.createElement("div");
@@ -763,8 +785,10 @@ const entry = {
   tags,
   imageUrl,
   likes: 0,
+  iconUrl: getSelectedIconUrlForEntry(),
   createdAt: serverTimestamp()   // ← サーバ時刻を保存
 };
+
 
 
 
